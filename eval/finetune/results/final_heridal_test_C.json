@@ -1,0 +1,42 @@
+{
+ "images": 101,
+ "dataset": "heridal",
+ "scene_width": 1920,
+ "confidence": 0.42,
+ "weights": {
+  "yolov8n_sar_v1.pt": "21f16d2d72ec76bf020eeeddbc3b59836fa534af43fc88ec3723ce2b7af72e7d",
+  "yolov8s_sar_v1.pt": "90cda60aea2091c62a388954fe192104f9c5dbce96397bee00cbf4d650c40af4"
+ },
+ "seconds": 721.7,
+ "person": {
+  "gt": 337,
+  "tp": 216,
+  "fp": 58,
+  "fn": 121,
+  "recall": 0.6409495548961425,
+  "precision": 0.7883211678832117,
+  "fp_per_image": 0.5742574257425742,
+  "ap50": 0.7119859568590348,
+  "by_agreement": {
+   "both models": {
+    "correct": 156,
+    "false": 21,
+    "precision_wilson95": [
+     0.8814,
+     0.8254,
+     0.9211
+    ]
+   },
+   "one model": {
+    "correct": 60,
+    "false": 37,
+    "precision_wilson95": [
+     0.6186,
+     0.5191,
+     0.709
+    ]
+   }
+  }
+ },
+ "car_predictions_operating": 11
+}

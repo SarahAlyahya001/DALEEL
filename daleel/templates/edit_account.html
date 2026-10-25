@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_account_fields.html" import identity_fields with context %}
+{% block title %}Edit account · DALEEL{% endblock %}
+{% block content %}
+<a class="account-back" href="{{ url_for('admin.accounts') }}">{{ icon('arrow-left',16) }} Accounts</a>
+<header class="page-header"><div class="page-header__title"><h1>Edit account</h1></div></header>
+<div class="account-edit-grid">
+  <form class="create-form account-details" method="post">
+    <h3>Account details</h3>
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    {{ identity_fields('edit', account) }}
+    <div class="field">
+      <label class="field__label" for="edit-status">Account status</label>
+      <select class="field__input" id="edit-status" name="account_status" required>
+        {% for status in (('Active', 'Suspended') if account.password_initialized else ('Invited', 'Suspended')) %}
+        <option value="{{ status }}" {% if request.form.get('account_status', account.account_status) == status %}selected{% endif %}>{{ status }}</option>
+        {% endfor %}
+      </select>
+      <p class="field__hint">Suspension blocks sign-in without removing mission records.</p>
+    </div>
+    <div class="account-form-actions"><button class="btn btn--primary" type="submit">Save changes</button><a class="btn btn--ghost" href="{{ url_for('admin.accounts') }}">Cancel</a></div>
+  </form>
+  <section class="account-access" aria-labelledby="access-heading">
+    <h3 id="access-heading">Account access</h3>
+    <p>Generate a temporary password if this employee needs access restored. Their existing sessions will be signed out.</p>
+    <p class="field__hint">The password is shown once. Share it offline; the employee must choose a new password at sign-in.</p>
+    {% if account.account_status == 'Suspended' %}<p class="field__hint">This account will remain suspended until you restore its status.</p>{% endif %}
+    <form method="post" action="{{ url_for('admin.reset_password', user_id=account.user_id) }}">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn--secondary" type="submit">Reset password</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_account_fields.html" import identity_fields with context %}
+{% block title %}Account management · DALEEL{% endblock %}
+{% block content %}
+<header class="page-header"><div class="page-header__title"><h1>Account management</h1></div></header>
+<div class="admin-grid">
+  <section class="account-list" aria-labelledby="accounts-heading">
+    <div class="account-list__head"><h3 id="accounts-heading">Accounts</h3><span class="label">{{ users|length }} {{ 'matches' if search else 'accounts' }}</span></div>
+    <form class="account-search" method="get">
+      <label class="sr-only" for="account-search">Search accounts</label>
+      <input class="field__input" id="account-search" name="q" type="search" value="{{ search }}" placeholder="Search name, username or email" maxlength="150">
+      <button class="btn btn--secondary" type="submit" aria-label="Search accounts">{{ icon('search',16) }}</button>
+    </form>
+    {% for u in users %}
+    <div class="account-row">
+      <div class="account-row__avatar{{ ' account-row__avatar--admin' if u.is_admin else '' }}" aria-hidden="true">{{ u.display_name[:2]|upper }}</div>
+      <div class="account-row__identity"><div class="account-row__name" title="{{ u.display_name }}">{{ u.display_name }}</div><div class="account-row__user" title="{{ u.username }}{% if u.email %} · {{ u.email }}{% endif %}">{{ u.email or u.username }}</div></div>
+      <div class="account-row__meta"><span class="account-row__role">{{ 'Administrator' if u.is_admin else 'Analyst' }}</span><span class="account-row__status account-row__status--{{ u.account_status|lower }}">{{ u.account_status }}</span></div>
+      <a class="btn btn--ghost account-row__edit" href="{{ url_for('admin.edit_account', user_id=u.user_id) }}" aria-label="Manage {{ u.display_name }}" title="Manage account">{{ icon('edit',18) }}</a>
+    </div>
+    {% else %}<p class="account-empty">No accounts match your search.</p>{% endfor %}
+  </section>
+  <form class="create-form" id="create-account-form" method="post">
+    <h3>Create account</h3>
+    <p class="create-form__sub">A temporary password will be shown once. Share it with the employee offline.</p>
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    {{ identity_fields('new') }}
+    <button type="submit" class="btn btn--primary btn--block create-form__submit">Create account {{ icon('arrow') }}</button>
+  </form>
+</div>
+{% endblock %}

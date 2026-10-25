@@ -1,0 +1,113 @@
+1
+00:00:00,000 --> 00:00:01,000
+<font size="28">SrtCnt : 1, DiffTime : 1000ms
+2026-09-24 08:00:00.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.423500] [longitude: 45.071200] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+2
+00:00:01,000 --> 00:00:02,000
+<font size="28">SrtCnt : 2, DiffTime : 1000ms
+2026-09-24 08:00:01.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.423565] [longitude: 45.071230] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+3
+00:00:02,000 --> 00:00:03,000
+<font size="28">SrtCnt : 3, DiffTime : 1000ms
+2026-09-24 08:00:02.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.423630] [longitude: 45.071260] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+4
+00:00:03,000 --> 00:00:04,000
+<font size="28">SrtCnt : 4, DiffTime : 1000ms
+2026-09-24 08:00:03.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.423695] [longitude: 45.071290] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+5
+00:00:04,000 --> 00:00:05,000
+<font size="28">SrtCnt : 5, DiffTime : 1000ms
+2026-09-24 08:00:04.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.423760] [longitude: 45.071320] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+6
+00:00:05,000 --> 00:00:06,000
+<font size="28">SrtCnt : 6, DiffTime : 1000ms
+2026-09-24 08:00:05.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.423825] [longitude: 45.071350] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+7
+00:00:06,000 --> 00:00:07,000
+<font size="28">SrtCnt : 7, DiffTime : 1000ms
+2026-09-24 08:00:06.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.423890] [longitude: 45.071380] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+8
+00:00:07,000 --> 00:00:08,000
+<font size="28">SrtCnt : 8, DiffTime : 1000ms
+2026-09-24 08:00:07.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.423955] [longitude: 45.071410] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+9
+00:00:08,000 --> 00:00:09,000
+<font size="28">SrtCnt : 9, DiffTime : 1000ms
+2026-09-24 08:00:08.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.424020] [longitude: 45.071440] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+10
+00:00:09,000 --> 00:00:10,000
+<font size="28">SrtCnt : 10, DiffTime : 1000ms
+2026-09-24 08:00:09.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.424085] [longitude: 45.071470] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+11
+00:00:10,000 --> 00:00:11,000
+<font size="28">SrtCnt : 11, DiffTime : 1000ms
+2026-09-24 08:00:10.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.424150] [longitude: 45.071500] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+12
+00:00:11,000 --> 00:00:12,000
+<font size="28">SrtCnt : 12, DiffTime : 1000ms
+2026-09-24 08:00:11.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.424215] [longitude: 45.071530] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+13
+00:00:12,000 --> 00:00:13,000
+<font size="28">SrtCnt : 13, DiffTime : 1000ms
+2026-09-24 08:00:12.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.424280] [longitude: 45.071560] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+14
+00:00:13,000 --> 00:00:14,000
+<font size="28">SrtCnt : 14, DiffTime : 1000ms
+2026-09-24 08:00:13.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.424345] [longitude: 45.071590] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+15
+00:00:14,000 --> 00:00:15,000
+<font size="28">SrtCnt : 15, DiffTime : 1000ms
+2026-09-24 08:00:14.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.424410] [longitude: 45.071620] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+16
+00:00:15,000 --> 00:00:16,000
+<font size="28">SrtCnt : 16, DiffTime : 1000ms
+2026-09-24 08:00:15.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.424475] [longitude: 45.071650] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+17
+00:00:16,000 --> 00:00:17,000
+<font size="28">SrtCnt : 17, DiffTime : 1000ms
+2026-09-24 08:00:16.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.424540] [longitude: 45.071680] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+18
+00:00:17,000 --> 00:00:18,000
+<font size="28">SrtCnt : 18, DiffTime : 1000ms
+2026-09-24 08:00:17.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.424605] [longitude: 45.071710] [rel_alt: 80.000 abs_alt: 912.000] </font>
+
+19
+00:00:18,000 --> 00:00:18,300
+<font size="28">SrtCnt : 19, DiffTime : 300ms
+2026-09-24 08:00:18.000
+[iso : 100] [shutter : 1/2000] [fnum : 280] [ev : 0] [latitude: 21.424670] [longitude: 45.071740] [rel_alt: 80.000 abs_alt: 912.000] </font>

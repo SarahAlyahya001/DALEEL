@@ -1,0 +1,5 @@
+# Caddy serves DALEEL over HTTPS and renews the certificate automatically.
+{$DALEEL_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy daleel:8000
+}

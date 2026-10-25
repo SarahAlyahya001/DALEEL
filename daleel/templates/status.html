@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Mission Status · DALEEL{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div class="page-header__title"><h1>{{ 'Processing footage' if state.status == 'Processing' else 'Mission status' }}</h1><span class="eyebrow">Mission {{ mission.mission_id }}</span></div>
+  <p class="page-header__sub">Follow the analysis of your footage and telemetry. Results become available when processing completes.</p>
+</header>
+<div class="processing-grid" id="mission-state" data-mission-state="{{ state.status }}">
+  <section class="processing-stages" aria-labelledby="stages-heading">
+    <h3 id="stages-heading">Pipeline stages</h3>
+    <div class="stage is-done">
+      <div class="stage__main"><div class="stage__indicator" aria-hidden="true"></div><div><div class="stage__name">Preparing data</div><div class="stage__desc">MP4 footage and SRT telemetry accepted</div></div></div><div class="stage__status">Done</div>
+    </div>
+    <div class="stage {{ 'is-active' if state.status == 'Processing' else ('is-done' if state.status == 'Complete' else 'is-pending') }}" id="analysis-stage">
+      <div class="stage__main"><div class="stage__indicator processing-indicator" aria-hidden="true"></div><div><div class="stage__name">Analyzing footage</div><div class="stage__desc">Every 15th frame · YOLOv8n and YOLOv8s</div></div></div><div class="stage__status" id="analysis-stage-status">{{ 'Running' if state.status == 'Processing' else state.status }}</div>
+    </div>
+    <div class="stage {{ 'is-done' if state.status == 'Complete' else 'is-pending' }}" data-output-stage>
+      <div class="stage__main"><div class="stage__indicator" aria-hidden="true"></div><div><div class="stage__name">Consolidating observations</div><div class="stage__desc">Repeated detections · model agreement</div></div></div><div class="stage__status">{{ 'Done' if state.status == 'Complete' else 'Pending' }}</div>
+    </div>
+    <div class="stage {{ 'is-done' if state.status == 'Complete' else 'is-pending' }}" data-output-stage>
+      <div class="stage__main"><div class="stage__indicator" aria-hidden="true"></div><div><div class="stage__name">Generating results</div><div class="stage__desc">Representative evidence · mission map</div></div></div><div class="stage__status">{{ 'Done' if state.status == 'Complete' else 'Pending' }}</div>
+    </div>
+  </section>
+  <section class="processing-monitor" aria-label="Mission processing monitor">
+    <div class="monitor__head"><span>Mission {{ mission.mission_id }}</span><span>Analysis status</span></div>
+    <div class="gauge">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><circle class="gauge__track" cx="50" cy="50" r="44"/><circle class="gauge__bar" cx="50" cy="50" r="44"/></svg>
+      <div class="gauge__center"><span class="gauge__pct" id="state" aria-live="polite">{{ state.status }}</span><span class="gauge__lbl">Mission status</span></div>
+    </div>
+    <div class="monitor-stats">
+      <div><div class="monitor-stat__num" id="yolov8n-count">{{ state.yolov8n_frames }}</div><div class="monitor-stat__lbl">YOLOv8n frames</div></div>
+      <div><div class="monitor-stat__num" id="yolov8s-count">{{ state.yolov8s_frames }}</div><div class="monitor-stat__lbl">YOLOv8s frames</div></div>
+      <div><div class="monitor-stat__num" id="elapsed">{{ '%.2f'|format(state.elapsed_seconds) if state.elapsed_seconds is not none else '—' }}</div><div class="monitor-stat__lbl">Elapsed seconds</div></div>
+    </div>
+    <p id="message" class="monitor-note" role="status">{% if state.status == 'Complete' %}Processing complete. Results are available.{% elif state.status == 'Failed' %}Processing failed. Original MP4 and SRT files are retained.{% else %}Processing. Counts show the sampled frames analyzed by each model.{% endif %}</p>
+    <div class="monitor-actions">
+      <a class="btn btn--primary" id="results-link" href="{{ url_for('main.results', mission_id=mission.mission_id) }}" {% if state.status != 'Complete' %}hidden{% endif %}>View results {{ icon('arrow') }}</a>
+      <a class="btn btn--ghost" href="{{ url_for('main.history') }}">Mission history</a>
+    </div>
+    <noscript><p class="monitor-note">Refresh this page to check the mission status.</p></noscript>
+  </section>
+</div>
+<script nonce="{{ csp_nonce() }}">
+async function poll() {
+  try {
+    const response = await fetch("{{ url_for('main.api_status', mission_id=mission.mission_id) }}");
+    if (!response.ok) throw new Error("Status request failed");
+    const state = await response.json();
+    document.getElementById("state").textContent = state.status;
+    document.getElementById("mission-state").dataset.missionState = state.status;
+    document.getElementById("yolov8n-count").textContent = state.yolov8n_frames;
+    document.getElementById("yolov8s-count").textContent = state.yolov8s_frames;
+    document.getElementById("elapsed").textContent = state.elapsed_seconds == null ? "—" : state.elapsed_seconds.toFixed(2);
+    if (state.status === "Complete" || state.status === "Failed") {
+      document.getElementById("message").textContent = state.status === "Complete"
+        ? "Processing complete. Results are available."
+        : "Processing failed. Original MP4 and SRT files are retained.";
+      document.getElementById("results-link").hidden = state.status !== "Complete";
+      document.getElementById("analysis-stage").className = "stage " + (state.status === "Complete" ? "is-done" : "is-pending");
+      document.getElementById("analysis-stage-status").textContent = state.status;
+      document.querySelectorAll("[data-output-stage]").forEach(stage => {
+        stage.className = "stage " + (state.status === "Complete" ? "is-done" : "is-pending");
+        stage.querySelector(".stage__status").textContent = state.status === "Complete" ? "Done" : "Unavailable";
+      });
+      return;
+    }
+  } catch (error) {
+    document.getElementById("message").textContent = "Status unavailable. Retrying; no completion is assumed.";
+  }
+  window.setTimeout(poll, 2000);
+}
+{% if state.status == 'Processing' %}poll();{% endif %}
+</script>
+{% endblock %}

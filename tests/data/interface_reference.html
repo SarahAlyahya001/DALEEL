@@ -1,0 +1,3008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DALEEL — Desert SAR Detection Platform</title>
+
+<!-- Leaflet for the results map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<style>
+/* ============================================================
+   DALEEL — Operational Frontend
+   Tactical minimalism for desert SAR analysts.
+   ============================================================ */
+
+/* ---------- 1. Tokens ---------- */
+:root {
+  /* Palette */
+  --sand-50:  #FAF6EF;
+  --sand-100: #F2EADC;
+  --sand-200: #E6D7B8;
+  --sand-300: #D9C394;
+  --sand-400: #C9A96E;
+  --sand-500: #A8895A;
+
+  --ink-900: #1C1A17;
+  --ink-800: #2B2724;
+  --ink-700: #3A3631;
+  --ink-600: #5A544D;
+  --ink-500: #7A746B;
+  --ink-400: #9A938A;
+  --ink-300: #BDB6AB;
+
+  --line:    #D9D2C2;
+  --line-strong: #B8B0A0;
+
+  --bg:      #F5EFE3;
+  --panel:   #FBF8F1;
+  --panel-2: #F2EADC;
+
+  /* Tier colors — muted, never alarming */
+  --high:        #4F7A4A;   /* muted forest green */
+  --high-bg:     #E4ECDF;
+  --high-border: #B5C9AE;
+
+  --alert:        #B5832E;  /* muted amber */
+  --alert-bg:     #F4E8CF;
+  --alert-border: #D9BD7E;
+
+  --error:   #8B3A2E;
+  --error-bg: #F1DDD7;
+
+  /* Typography */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+
+  /* Spacing scale */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+
+  --radius-sm: 2px;
+  --radius:    4px;
+  --radius-lg: 6px;
+}
+
+/* ---------- 2. Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-900);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, select, textarea { font: inherit; color: inherit; }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+
+/* إخفاء أيقونة العين الافتراضية في متصفح إيدج */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
+/* للتأكد من عدم تداخل أي إضافات أخرى */
+.field__pw-toggle {
+  z-index: 2; /* التصميم الخاص بك سيكون في الأعلى */
+}
+
+/* ---------- 3. Type utilities ---------- */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+}
+.label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-600);
+  font-weight: 500;
+}
+.mono { font-family: var(--font-mono); }
+h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+h1 { font-size: 28px; line-height: 1.2; }
+h2 { font-size: 20px; line-height: 1.25; }
+h3 { font-size: 16px; line-height: 1.3; }
+
+/* ============================================================
+   4. Screen routing — only one .screen visible at a time
+   ============================================================ */
+.screen { display: none; }
+.screen.is-active { display: block; }
+
+/* ============================================================
+   5. LOGIN SCREEN
+   ============================================================ */
+.login {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+.login__brand {
+  background: var(--ink-900);
+  color: var(--sand-100);
+  padding: var(--s-7) var(--s-7);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+/* Subtle topographic texture, no flashy gradients */
+.login__brand::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(217, 195, 148, 0.04) 0, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(217, 195, 148, 0.03) 0, transparent 35%);
+  pointer-events: none;
+}
+.login__brand > * { position: relative; z-index: 1; }
+.login__meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sand-300);
+  display: flex;
+  justify-content: space-between;
+}
+.login__hero { margin-top: auto; }
+.login__title {
+  font-size: 56px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: var(--s-4);
+}
+.login__subtitle {
+  font-size: 15px;
+  color: var(--ink-300);
+  max-width: 380px;
+  line-height: 1.55;
+}
+.login__form-wrap {
+  background: var(--panel);
+  padding: var(--s-7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login__form {
+  width: 100%;
+  max-width: 360px;
+}
+.login__form .eyebrow { margin-bottom: var(--s-3); }
+.login__form h2 { margin-bottom: var(--s-5); }
+
+/* ---------- 6. Forms ---------- */
+.field { margin-bottom: var(--s-4); }
+.field__label {
+  display: block;
+  margin-bottom: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-600);
+}
+.field__input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink-900);
+  transition: border-color 120ms ease, background 120ms ease;
+}
+.field__input:focus {
+  outline: none;
+  border-color: var(--ink-800);
+  background: #fff;
+}
+.field__input::placeholder { color: var(--ink-400); }
+/* Password reveal wrapper */
+.field__pw-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.field__pw-wrap .field__input {
+  padding-right: 40px;
+}
+.field__pw-toggle {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--ink-400);
+  display: flex;
+  align-items: center;
+  transition: color 120ms ease;
+}
+.field__pw-toggle:hover { color: var(--ink-700); }
+
+.field__error {
+  display: none;
+  margin-top: var(--s-2);
+  padding: 8px 10px;
+  background: var(--error-bg);
+  border-left: 2px solid var(--error);
+  color: var(--error);
+  font-size: 13px;
+}
+.field__error.is-visible { display: block; }
+
+/* ---------- 7. Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+.btn--primary {
+  background: var(--ink-900);
+  color: var(--sand-100);
+}
+.btn--primary:hover { background: var(--ink-700); }
+.btn--secondary {
+  background: transparent;
+  border-color: var(--line-strong);
+  color: var(--ink-800);
+}
+.btn--secondary:hover {
+  background: var(--panel-2);
+  border-color: var(--ink-700);
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--ink-700);
+  padding: 8px 12px;
+}
+.btn--ghost:hover { color: var(--ink-900); }
+.btn--block { width: 100%; }
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ============================================================
+   8. APP SHELL (used by all post-login screens)
+   ============================================================ */
+.shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+}
+.sidebar {
+  background: var(--ink-900);
+  color: var(--sand-100);
+  padding: var(--s-5) var(--s-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  border-right: 1px solid var(--ink-700);
+}
+.sidebar__brand {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: var(--s-2) var(--s-3);
+}
+.sidebar__section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-400);
+  padding: 0 var(--s-3);
+  margin-bottom: var(--s-2);
+}
+.sidebar__nav { display: flex; flex-direction: column; gap: 2px; }
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px var(--s-3);
+  border-radius: var(--radius);
+  color: var(--ink-300);
+  font-size: 13px;
+  transition: background 120ms ease, color 120ms ease;
+  text-align: left;
+  width: 100%;
+}
+.sidebar__link:hover { color: var(--sand-100); background: var(--ink-800); }
+.sidebar__link.is-active {
+  background: var(--ink-800);
+  color: var(--sand-200);
+  border-left: 2px solid var(--sand-400);
+  padding-left: 10px;
+}
+.sidebar__link-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-500);
+}
+.sidebar__user {
+  margin-top: auto;
+  padding: var(--s-3);
+  border-top: 1px solid var(--ink-700);
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+.sidebar__avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--sand-400);
+  color: var(--ink-900);
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  font-size: 12px;
+}
+.sidebar__user-meta { font-size: 12px; line-height: 1.3; }
+.sidebar__user-meta strong { color: var(--sand-100); font-weight: 500; display: block; }
+.sidebar__user-meta span { color: var(--ink-400); font-family: var(--font-mono); font-size: 10px; }
+
+.main { background: var(--bg); display: flex; flex-direction: column; min-width: 0; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s-4) var(--s-6);
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.topbar__crumb {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+}
+.topbar__crumb strong { color: var(--ink-900); font-weight: 500; }
+.topbar__session {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-600);
+}
+.topbar__session strong { color: var(--ink-900); }
+
+.content { padding: var(--s-6); flex: 1; min-width: 0; }
+.content--no-pad { padding: 0; flex: 1; min-height: 0; }
+
+/* Page header */
+.page-header { margin-bottom: var(--s-6); }
+.page-header__title { display: flex; align-items: baseline; gap: var(--s-3); }
+.page-header__sub {
+  margin-top: var(--s-2);
+  color: var(--ink-600);
+  font-size: 14px;
+  max-width: 640px;
+}
+
+/* ============================================================
+   9. UPLOAD SCREEN
+   ============================================================ */
+.upload-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-4);
+  margin-bottom: var(--s-5);
+}
+.dropzone {
+  background: var(--panel);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  padding: var(--s-6);
+  text-align: center;
+  transition: border-color 150ms ease, background 150ms ease;
+  cursor: pointer;
+  position: relative;
+}
+.dropzone:hover { border-color: var(--ink-700); background: var(--panel-2); }
+.dropzone.is-filled { border-style: solid; border-color: var(--high); background: var(--high-bg); }
+.dropzone__step {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  margin-bottom: var(--s-3);
+}
+.dropzone__icon {
+  width: 36px; height: 36px;
+  margin: 0 auto var(--s-3);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink-700);
+}
+.dropzone__title { font-weight: 500; color: var(--ink-900); margin-bottom: 4px; }
+.dropzone__hint { font-size: 12px; color: var(--ink-500); }
+.dropzone__filename {
+  display: none;
+  margin-top: var(--s-3);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--high);
+}
+.dropzone.is-filled .dropzone__filename { display: block; }
+.dropzone input[type="file"] { display: none; }
+
+.thresholds {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--s-5);
+  margin-bottom: var(--s-5);
+}
+.thresholds__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--s-4);
+}
+.thresholds__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-6); }
+.threshold__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--s-3);
+}
+.threshold__value {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink-900);
+}
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  outline: none;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  background: var(--ink-900);
+  border: 2px solid var(--sand-100);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.slider::-moz-range-thumb {
+  width: 16px; height: 16px;
+  background: var(--ink-900);
+  border: 2px solid var(--sand-100);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.threshold__scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-500);
+}
+
+.upload-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+.upload-actions__hint { font-size: 12px; color: var(--ink-500); }
+
+.inline-error {
+  margin-bottom: var(--s-4);
+  padding: 12px var(--s-4);
+  background: var(--error-bg);
+  border-left: 3px solid var(--error);
+  color: var(--error);
+  font-size: 13px;
+  display: none;
+}
+.inline-error.is-visible { display: block; }
+
+/* ============================================================
+   10. PROCESSING SCREEN
+   ============================================================ */
+.processing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-6);
+  align-items: start;
+}
+.processing-stages {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--s-5);
+}
+.processing-stages h3 { margin-bottom: var(--s-4); }
+.stage {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+.stage:last-child { border-bottom: none; }
+.stage__main { display: flex; gap: var(--s-3); }
+.stage__indicator {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  flex-shrink: 0;
+  margin-top: 2px;
+  position: relative;
+}
+.stage.is-done .stage__indicator { background: var(--high); border-color: var(--high); }
+.stage.is-done .stage__indicator::after {
+  content: "";
+  position: absolute;
+  inset: 4px 5px 5px 4px;
+  border-bottom: 1.5px solid #fff;
+  border-right: 1.5px solid #fff;
+  transform: rotate(45deg);
+}
+.stage.is-active .stage__indicator {
+  border-color: var(--ink-900);
+  border-style: dashed;
+  animation: spin 2.5s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.stage__name { font-weight: 500; color: var(--ink-900); }
+.stage.is-pending .stage__name { color: var(--ink-500); }
+.stage__desc { font-size: 12px; color: var(--ink-500); margin-top: 2px; }
+.stage__status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  flex-shrink: 0;
+}
+.stage.is-done .stage__status { color: var(--high); }
+.stage.is-active .stage__status { color: var(--ink-900); }
+
+.processing-monitor {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--s-6);
+  text-align: center;
+}
+.monitor__head {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  margin-bottom: var(--s-5);
+}
+.gauge {
+  width: 200px; height: 200px;
+  margin: 0 auto;
+  position: relative;
+}
+.gauge svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.gauge__track { fill: none; stroke: var(--line); stroke-width: 6; }
+.gauge__bar {
+  fill: none;
+  stroke: var(--ink-900);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 400ms ease;
+}
+.gauge__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.gauge__pct { font-family: var(--font-mono); font-size: 32px; font-weight: 500; }
+.gauge__lbl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  margin-top: 4px;
+}
+.monitor-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: var(--s-6);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--line);
+}
+.monitor-stat__num {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 500;
+}
+.monitor-stat__lbl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  margin-top: 2px;
+}
+
+/* ============================================================
+   11. RESULTS DASHBOARD
+   ============================================================ */
+.results-shell {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  height: calc(100vh - 56px); /* topbar */
+  min-height: 0;
+}
+.results-list {
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.results-list__head {
+  padding: var(--s-4) var(--s-4) var(--s-3);
+  border-bottom: 1px solid var(--line);
+}
+.results-list__title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.results-list__title h2 { font-size: 18px; }
+.results-list__title-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-500);
+}
+.results-list__filters {
+  display: flex;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+.chip {
+  padding: 4px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-700);
+  background: var(--panel);
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+.chip:hover { border-color: var(--ink-700); }
+.chip.is-active { background: var(--ink-900); color: var(--sand-100); border-color: var(--ink-900); }
+
+.detection-list { flex: 1; overflow-y: auto; }
+.detection {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  align-items: center;
+  transition: background 120ms ease;
+  text-align: left;
+  width: 100%;
+}
+.detection:hover { background: var(--panel-2); }
+.detection.is-selected {
+  background: var(--panel-2);
+  border-left: 3px solid var(--ink-900);
+  padding-left: 13px;
+}
+.detection__thumb {
+  width: 50px; height: 38px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.detection__body { min-width: 0; }
+.detection__id {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-500);
+  margin-bottom: 2px;
+}
+.detection__meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-700);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.detection__tier { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.tier-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.tier-badge--high { background: var(--high-bg); border-color: var(--high-border); color: var(--high); }
+.tier-badge--alert { background: var(--alert-bg); border-color: var(--alert-border); color: var(--alert); }
+.detection__class {
+  font-size: 11px;
+  color: var(--ink-500);
+  font-family: var(--font-mono);
+}
+
+/* Map area */
+.results-map-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.results-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s-3) var(--s-5);
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  gap: var(--s-4);
+}
+.results-toolbar__stats {
+  display: flex;
+  gap: var(--s-5);
+  align-items: baseline;
+}
+.stat-pill {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+.stat-pill__num {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 500;
+}
+.stat-pill__lbl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+}
+.results-toolbar__exports { display: flex; gap: var(--s-2); }
+
+#daleel-map { flex: 1; background: #2a241c; min-height: 0; }
+
+/* Custom map markers */
+.daleel-marker {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.3);
+  transition: transform 150ms ease;
+}
+.daleel-marker--high { background: var(--high); }
+.daleel-marker--alert { background: var(--alert); }
+.daleel-marker.is-active { transform: scale(1.5); }
+
+/* Popup styling */
+.leaflet-popup-content-wrapper {
+  border-radius: var(--radius) !important;
+  background: var(--panel) !important;
+  box-shadow: 0 4px 20px rgba(28, 26, 23, 0.18) !important;
+  padding: 0 !important;
+}
+.leaflet-popup-content { margin: 0 !important; padding: 0 !important; min-width: 280px; }
+.leaflet-popup-tip { background: var(--panel) !important; }
+.popup {
+  font-family: var(--font-sans);
+  color: var(--ink-900);
+}
+.popup__thumb {
+  height: 130px;
+  background: linear-gradient(135deg, #8a6a44 0%, #6b502f 50%, #4a3621 100%);
+  position: relative;
+}
+.popup__thumb-bbox {
+  position: absolute;
+  border: 2px solid var(--sand-200);
+  width: 50px; height: 60px;
+  top: 35px; left: 50%;
+  transform: translateX(-50%);
+}
+.popup__body { padding: var(--s-4); }
+.popup__id {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-500);
+  margin-bottom: 4px;
+}
+.popup__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--s-3);
+}
+.popup__class { font-weight: 600; font-size: 15px; }
+.popup__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+}
+.popup__row-lbl { color: var(--ink-500); font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; }
+.popup__row-val { font-family: var(--font-mono); color: var(--ink-900); }
+
+/* Empty state */
+.empty-state {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: var(--s-7);
+}
+.empty-state__inner { max-width: 340px; }
+.empty-state h3 { margin-bottom: var(--s-2); }
+.empty-state p { color: var(--ink-600); }
+
+/* ============================================================
+   12. SESSION HISTORY
+   ============================================================ */
+.history-search {
+  display: flex;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+  align-items: center;
+}
+.history-search input {
+  flex: 1;
+  padding: 9px 12px;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+}
+.history-search input:focus {
+  outline: none;
+  border-color: var(--ink-700);
+  background: #fff;
+}
+
+.table-wrap {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.table thead th {
+  text-align: left;
+  padding: var(--s-3) var(--s-4);
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-600);
+  font-weight: 500;
+}
+.table tbody td {
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.table tbody tr { cursor: pointer; transition: background 120ms ease; }
+.table tbody tr:hover { background: var(--panel-2); }
+.table tbody tr:last-child td { border-bottom: none; }
+.table .session-id { font-family: var(--font-mono); font-weight: 500; }
+.table .video-name { font-family: var(--font-mono); font-size: 12px; color: var(--ink-700); }
+.table .video-size { font-family: var(--font-mono); font-size: 11px; color: var(--ink-500); display: block; margin-top: 2px; }
+.table .date-rel { color: var(--ink-900); }
+.table .date-abs { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--ink-500); margin-top: 2px; }
+.table .tracks-summary { font-family: var(--font-mono); font-size: 11px; color: var(--ink-500); margin-top: 2px; display: block; }
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+  border: 1px solid;
+  font-weight: 500;
+}
+.status-badge--complete { background: var(--high-bg); border-color: var(--high-border); color: var(--high); }
+.status-badge--processing { background: var(--alert-bg); border-color: var(--alert-border); color: var(--alert); }
+.status-badge--empty { background: var(--panel-2); border-color: var(--line-strong); color: var(--ink-600); }
+.status-badge--failed { background: var(--error-bg); border-color: #C7A299; color: var(--error); }
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.status-badge--processing .status-dot { animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ============================================================
+   13. ADMIN — ACCOUNT MANAGEMENT
+   ============================================================ */
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: var(--s-5);
+  align-items: start;
+}
+.account-list {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.account-list__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--s-4) var(--s-5);
+  border-bottom: 1px solid var(--line);
+}
+.account-list__head h3 { font-size: 14px; }
+.account-row {
+  display: grid;
+  grid-template-columns: 36px 1fr auto auto auto;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-5);
+  border-bottom: 1px solid var(--line);
+  align-items: center;
+}
+.account-row:last-child { border-bottom: none; }
+.account-row__avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--sand-300);
+  color: var(--ink-900);
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  font-size: 13px;
+}
+.account-row__avatar--admin { background: var(--ink-900); color: var(--sand-200); }
+.account-row__name { font-weight: 500; color: var(--ink-900); }
+.account-row__user { font-family: var(--font-mono); font-size: 11px; color: var(--ink-500); margin-top: 2px; }
+.account-row__role {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-700);
+}
+.account-row__last {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-500);
+}
+
+.create-form {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--s-5);
+  position: sticky;
+  top: var(--s-5);
+}
+.create-form h3 { margin-bottom: var(--s-2); }
+.create-form__sub { font-size: 12px; color: var(--ink-600); margin-bottom: var(--s-4); }
+.role-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); }
+.role-toggle input { display: none; }
+.role-toggle label {
+  padding: var(--s-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+  transition: all 120ms ease;
+  display: block;
+}
+.role-toggle label strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-900);
+  margin-bottom: 2px;
+}
+.role-toggle label span { font-size: 11px; color: var(--ink-500); }
+.role-toggle input:checked + label {
+  border-color: var(--ink-900);
+  background: var(--panel-2);
+}
+
+.field__hint { font-size: 11px; color: var(--ink-500); margin-top: 4px; }
+
+/* ============================================================
+   14. Logout button (in sidebar user area)
+   ============================================================ */
+.sidebar__logout {
+  margin-left: auto;
+  padding: 6px;
+  color: var(--ink-400);
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  transition: color 120ms ease, background 120ms ease;
+}
+.sidebar__logout:hover {
+  color: var(--sand-100);
+  background: var(--ink-800);
+}
+.sidebar__logout svg {
+  width: 14px; height: 14px;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  fill: none;
+}
+
+/* ============================================================
+   15. Toast notification (file generated, exported, etc.)
+   ============================================================ */
+.toast {
+  position: fixed;
+  bottom: var(--s-5);
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--ink-900);
+  color: var(--sand-100);
+  border: 1px solid var(--high);
+  border-left: 3px solid var(--high);
+  border-radius: var(--radius);
+  padding: 10px var(--s-4);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  box-shadow: 0 8px 28px rgba(28, 26, 23, 0.25);
+  z-index: 10001;
+  transition: transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1), opacity 280ms ease;
+  opacity: 0;
+  pointer-events: none;
+}
+.toast.is-visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+.toast__icon {
+  width: 16px; height: 16px;
+  stroke: var(--high);
+  fill: none;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+.toast__msg-id {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-300);
+  margin-left: var(--s-2);
+}
+
+/* ============================================================
+   16. Detection icons (replace thumbnail with class icon)
+   ============================================================ */
+.detection__icon {
+  width: 40px; height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+.detection__icon--high {
+  background: var(--high-bg);
+  border-color: var(--high-border);
+  color: var(--high);
+}
+.detection__icon--alert {
+  background: var(--alert-bg);
+  border-color: var(--alert-border);
+  color: var(--alert);
+}
+.detection__icon svg {
+  width: 22px; height: 22px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  fill: none;
+}
+
+/* ============================================================
+   17. Popup detection frame (clearer bbox over satellite tile)
+   ============================================================ */
+.popup__thumb {
+  height: 140px;
+  background:
+    linear-gradient(135deg, #8a6a44 0%, #6b502f 50%, #4a3621 100%);
+  position: relative;
+  overflow: hidden;
+}
+.popup__thumb::before {
+  /* faint sand-grain texture */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 25% 30%, rgba(255,240,200,0.06) 0, transparent 40%),
+    radial-gradient(circle at 70% 65%, rgba(255,240,200,0.05) 0, transparent 35%),
+    radial-gradient(circle at 50% 50%, rgba(0,0,0,0.18) 0, transparent 60%);
+}
+.popup__thumb-bbox {
+  position: absolute;
+  border: 2px solid var(--sand-200);
+  border-radius: 1px;
+  width: 56px; height: 70px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.4),
+    0 0 0 9999px rgba(0,0,0,0.28);
+}
+.popup__thumb-bbox::before,
+.popup__thumb-bbox::after {
+  content: "";
+  position: absolute;
+  width: 8px; height: 8px;
+  border: 2px solid var(--sand-100);
+}
+.popup__thumb-bbox::before {
+  top: -2px; left: -2px;
+  border-right: none; border-bottom: none;
+}
+.popup__thumb-bbox::after {
+  bottom: -2px; right: -2px;
+  border-left: none; border-top: none;
+}
+.popup__thumb-label {
+  position: absolute;
+  top: -22px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-900);
+  background: var(--sand-200);
+  padding: 2px 6px;
+  border-radius: 1px;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   19. Detection frame modal — analyst verifies the actual frame
+       on which the detection was raised, with overlaid bbox.
+   ============================================================ */
+.frame-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(28, 26, 23, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-5);
+}
+.frame-modal.is-open { display: flex; }
+.frame-panel {
+  width: 100%;
+  max-width: 960px;
+  max-height: 88vh;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(28, 26, 23, 0.32);
+  animation: framePanelIn 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@keyframes framePanelIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.frame-image {
+  background: var(--ink-900);
+  position: relative;
+  display: flex;
+  min-height: 380px;
+  overflow: hidden;
+}
+.frame-image svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.frame-image__close {
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 30px; height: 30px;
+  background: rgba(251, 248, 241, 0.92);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--ink-900);
+  display: grid;
+  place-items: center;
+  z-index: 10;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+.frame-image__close:hover {
+  color: var(--ink-900);
+  border-color: var(--ink-900);
+  background: var(--sand-100);
+}
+.frame-image__close svg {
+  width: 13px; height: 13px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+.frame-image__meta {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--sand-100);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: rgba(28, 26, 23, 0.65);
+  padding: 5px 9px;
+  border-radius: 1px;
+}
+.frame-info {
+  padding: var(--s-5) var(--s-5) var(--s-4);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.frame-info__banner {
+  padding: 7px 11px;
+  border-radius: 1px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: var(--s-4);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  border: 1px solid;
+}
+.frame-info__banner--high {
+  background: var(--high-bg);
+  color: var(--high);
+  border-color: var(--high-border);
+}
+.frame-info__banner--alert {
+  background: var(--alert-bg);
+  color: var(--alert);
+  border-color: var(--alert-border);
+}
+.frame-info__id {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-500);
+  letter-spacing: 0.1em;
+  margin-bottom: 3px;
+}
+.frame-info__class {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ink-900);
+  line-height: 1;
+  margin-bottom: var(--s-5);
+  text-transform: capitalize;
+  letter-spacing: -0.01em;
+}
+.frame-info__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4) var(--s-5);
+  margin-bottom: var(--s-5);
+}
+.frame-info__row-lbl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  margin-bottom: 3px;
+}
+.frame-info__row-val {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--ink-900);
+}
+.frame-info__row-val--coord {
+  color: var(--ink-900);
+  font-weight: 500;
+}
+.frame-scores {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: var(--s-4);
+  margin-bottom: var(--s-4);
+}
+.frame-scores__title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-600);
+  margin-bottom: var(--s-3);
+}
+.score-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 38px;
+  gap: var(--s-2);
+  align-items: center;
+  padding: 4px 0;
+}
+.score-row__model {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-700);
+}
+.score-row--agreement {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.score-row--agreement .score-row__model { color: var(--ink-500); }
+.score-bar {
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.score-bar__fill {
+  height: 100%;
+  background: var(--ink-900);
+  transition: width 280ms ease;
+}
+.score-bar__fill--high { background: var(--high); }
+.score-bar__fill--alert { background: var(--alert); }
+.score-bar__fill--muted { background: var(--ink-500); }
+.score-row__val {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: right;
+  color: var(--ink-900);
+}
+.frame-info__actions {
+  margin-top: auto;
+  display: flex;
+  gap: var(--s-2);
+}
+.frame-info__actions .btn { flex: 1; }
+
+/* Responsive: stack the modal panel below ~720px */
+@media (max-width: 720px) {
+  .frame-panel { grid-template-columns: 1fr; max-height: 92vh; }
+  .frame-image { min-height: 280px; }
+}
+
+/* ============================================================
+   20. Demo helper bar (only shown to make all 6 screens reachable)
+   ============================================================ */
+.demo-jumper {
+  position: fixed;
+  top: var(--s-3);
+  right: var(--s-3);
+  background: var(--ink-900);
+  color: var(--sand-100);
+  border-radius: var(--radius);
+  padding: 6px;
+  display: flex;
+  gap: 2px;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.demo-jumper button {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-300);
+  padding: 4px 8px;
+  border-radius: 2px;
+}
+.demo-jumper button:hover { color: var(--sand-100); background: var(--ink-700); }
+.demo-jumper button.is-active { background: var(--sand-400); color: var(--ink-900); }
+.demo-jumper__label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--ink-400);
+  padding: 4px 6px;
+  border-right: 1px solid var(--ink-700);
+  margin-right: 4px;
+}
+
+/* Selection: muted */
+::selection { background: var(--sand-300); color: var(--ink-900); }
+.forgot-wrap {
+  background: var(--panel);
+  padding: var(--s-7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+.forgot-form {
+  width: 100%;
+  max-width: 380px;
+}
+.forgot-form .eyebrow { margin-bottom: var(--s-3); }
+.forgot-form h2 { margin-bottom: var(--s-2); }
+.forgot-form__sub { font-size: 13px; color: var(--ink-600); margin-bottom: var(--s-5); line-height: 1.55; }
+.forgot-success {
+  display: none;
+  padding: var(--s-4);
+  background: var(--high-bg);
+  border: 1px solid var(--high-border);
+  border-left: 3px solid var(--high);
+  border-radius: var(--radius);
+  color: var(--high);
+  font-size: 13px;
+  line-height: 1.55;
+  margin-bottom: var(--s-4);
+}
+.forgot-success.is-visible { display: block; }
+.forgot-back {
+  margin-top: var(--s-4);
+  font-size: 12px;
+  color: var(--ink-500);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.forgot-back a {
+  color: var(--ink-700);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* ============================================================
+   RESET PASSWORD SCREEN
+   ============================================================ */
+.reset-wrap {
+  background: var(--panel);
+  padding: var(--s-7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+.reset-form {
+  width: 100%;
+  max-width: 380px;
+}
+.reset-form .eyebrow { margin-bottom: var(--s-3); }
+.reset-form h2 { margin-bottom: var(--s-2); }
+.reset-form__sub { font-size: 13px; color: var(--ink-600); margin-bottom: var(--s-5); line-height: 1.55; }
+.reset-banner {
+  padding: var(--s-4);
+  background: var(--alert-bg);
+  border: 1px solid var(--alert-border);
+  border-left: 3px solid var(--alert);
+  border-radius: var(--radius);
+  color: var(--alert);
+  font-size: 13px;
+  line-height: 1.55;
+  margin-bottom: var(--s-5);
+}
+.reset-banner strong { display: block; margin-bottom: 4px; font-size: 12px; font-family: var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* Toast success variant */
+.toast--success { background: var(--high); }
+
+</style>
+</head>
+<body>
+<!-- Sanitized, read-only GP1 design reference. All displayed people, mission data,
+     filenames, dates, scores, counts and coordinates are fictional UI samples.
+     Authentication/account forms are display-only; no credentials or account lookup.
+     External Leaflet/Esri resources are retained as references, not vendored.
+     The current Flask application is the behavioral source of truth. -->
+
+<!-- Demo navigation aid (lets reviewers jump between screens without going through full flow) -->
+<div class="demo-jumper">
+  <span class="demo-jumper__label">FICTIONAL UI · JUMP TO</span>
+  <button type="button" data-jump="login">Login</button>
+  <button type="button" data-jump="upload">Upload</button>
+  <button type="button" data-jump="processing">Processing</button>
+  <button type="button" data-jump="results">Results</button>
+  <button type="button" data-jump="history">History</button>
+  <button type="button" data-jump="admin">Admin</button>
+</div> 
+
+
+<!-- ============================================================
+     FRAME MODAL — annotated frame view (analyst verification)
+     ============================================================ -->
+<div class="frame-modal" id="frame-modal" role="dialog" aria-modal="true" aria-labelledby="frame-modal-class">
+  <div class="frame-panel">
+    <div class="frame-image" id="frame-image">
+      <button class="frame-image__close" type="button" data-frame-close aria-label="Close">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"/></svg>
+      </button>
+      <div class="frame-image__meta" id="frame-meta">FRAME — · — · NADIR</div>
+    </div>
+    <div class="frame-info">
+      <div class="frame-info__banner" id="frame-banner">
+        <span>●</span><span id="frame-tier-text">—</span>
+      </div>
+      <div class="frame-info__id" id="frame-id">DET-—</div>
+      <h2 class="frame-info__class" id="frame-modal-class">—</h2>
+
+      <div class="frame-info__grid">
+        <div>
+          <div class="frame-info__row-lbl">Demo latitude</div>
+          <div class="frame-info__row-val frame-info__row-val--coord" id="frame-lat">—</div>
+        </div>
+        <div>
+          <div class="frame-info__row-lbl">Demo longitude</div>
+          <div class="frame-info__row-val frame-info__row-val--coord" id="frame-lng">—</div>
+        </div>
+        <div>
+          <div class="frame-info__row-lbl">Frame index</div>
+          <div class="frame-info__row-val" id="frame-index">—</div>
+        </div>
+        <div>
+          <div class="frame-info__row-lbl">Timestamp</div>
+          <div class="frame-info__row-val" id="frame-time">—</div>
+        </div>
+        <div>
+          <div class="frame-info__row-lbl">Track span</div>
+          <div class="frame-info__row-val" id="frame-span">—</div>
+        </div>
+        <div>
+          <div class="frame-info__row-lbl">Duration</div>
+          <div class="frame-info__row-val" id="frame-dur">—</div>
+        </div>
+      </div>
+
+      <div class="frame-scores">
+        <div class="frame-scores__title">Detection confidence</div>
+        <div class="score-row">
+          <span class="score-row__model">YOLOv8n</span>
+          <div class="score-bar"><div class="score-bar__fill" id="frame-bar-n" style="width:0"></div></div>
+          <span class="score-row__val" id="frame-val-n">—</span>
+        </div>
+        <div class="score-row">
+          <span class="score-row__model">YOLOv8s</span>
+          <div class="score-bar"><div class="score-bar__fill" id="frame-bar-s" style="width:0"></div></div>
+          <span class="score-row__val" id="frame-val-s">—</span>
+        </div>
+        <div class="score-row score-row--agreement">
+          <span class="score-row__model">IoU</span>
+          <div class="score-bar"><div class="score-bar__fill score-bar__fill--muted" id="frame-bar-iou" style="width:0"></div></div>
+          <span class="score-row__val" id="frame-val-iou">—</span>
+        </div>
+      </div>
+
+      <div class="frame-info__actions">
+        <button type="button" class="btn btn--secondary" data-copy-coord>
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="4" y="4" width="8" height="8" rx="1"/>
+            <path d="M2 9V3a1 1 0 011-1h5"/>
+          </svg>
+          Copy demo coordinate
+        </button>
+        <button type="button" class="btn btn--primary" data-frame-close>Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     TOAST — file generated / exported notification
+     ============================================================ -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <svg class="toast__icon" viewBox="0 0 16 16">
+    <path d="M3 8.5l3 3 7-7"/>
+  </svg>
+  <span id="toast-msg">Done</span>
+  <span class="toast__msg-id" id="toast-id"></span>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 1 — LOGIN
+     ============================================================ -->
+<section class="screen is-active" id="screen-login">
+  <div class="login">
+    <div class="login__brand">
+      <div class="login__meta">
+        <span>DALEEL / v1.0</span>
+      </div>
+      <div class="login__hero">
+        <div class="eyebrow" style="color: var(--sand-400); margin-bottom: var(--s-3);">Desert SAR · UAV Detection Platform </div>
+        <h1 class="login__title">DALEEL</h1>
+        <p class="login__subtitle">
+          Upload UAV footage and telemetry. Review georeferenced detections on the map.
+          Export waypoints for field teams.
+        </p>
+      </div>
+      <div class="login__meta">
+      </div>
+    </div>
+
+    <div class="login__form-wrap">
+      <form class="login__form" id="login-form" novalidate>
+        <h2>Sign in</h2>
+
+        <div class="field">
+          <label class="field__label" for="login-username">Username</label>
+          <input class="field__input" id="login-username" type="text" placeholder="Username" autocomplete="off" readonly aria-readonly="true" />
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="login-password">Password</label>
+          <div class="field__pw-wrap">
+            <input class="field__input" id="login-password" type="password" placeholder="Password" autocomplete="off" readonly aria-readonly="true" />
+            <button type="button" class="field__pw-toggle" aria-label="Toggle password visibility" onclick="(function(btn){var inp=btn.previousElementSibling;var show=inp.type==='password';inp.type=show?'text':'password';btn.innerHTML=show?'<svg width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.8\'><path d=\'M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24\'/><line x1=\'1\' y1=\'1\' x2=\'23\' y2=\'23\'/></svg>':'<svg width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.8\'><path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'/><circle cx=\'12\' cy=\'12\' r=\'3\'/></svg>';})(this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="field__error" id="login-error">
+          The credentials you entered could not be verified.
+        </div>
+
+        <button class="btn btn--primary btn--block" type="submit" style="margin-top: var(--s-3);">
+          Sign in
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 7h10M8 3l4 4-4 4"/>
+          </svg>
+        </button>
+
+        <p style="margin-top: var(--s-5); font-size: 12px; color: var(--ink-500); line-height: 1.5;">
+          Accounts are provisioned by the system administrator.
+          Contact your operations supervisor if you require access.
+          <br/><br/>
+          <a data-forgot style="color:var(--ink-600);text-decoration:underline;text-underline-offset:2px;cursor:pointer;">Forgot your password?</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SCREEN 2 — MISSION UPLOAD
+     ============================================================ -->
+<section class="screen" id="screen-upload">
+  <div class="shell">
+    <!-- Sidebar component will be rendered into all app screens -->
+    <aside class="sidebar" data-sidebar="upload"></aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__crumb">Operations / <strong>New analysis</strong></div>
+        <div class="topbar__session">No active session</div>
+      </header>
+
+      <div class="content">
+        <div class="page-header">
+          <div class="page-header__title">
+            <h1>New analysis</h1>
+            <span class="eyebrow">Mission setup</span>
+          </div>
+          <p class="page-header__sub">
+            Upload flight footage and telemetry, then configure detection thresholds before submission.
+          </p>
+        </div>
+
+        <div class="inline-error" id="upload-error">
+          The selected video exceeds the 500&nbsp;MB limit. Compress the file or split the recording.
+        </div>
+
+        <form id="upload-form" novalidate>
+          <!-- Step 1 + 2: file inputs -->
+          <div class="upload-grid">
+            <label class="dropzone" id="dz-video">
+              <div class="dropzone__step">Step 01 — Footage</div>
+              <div class="dropzone__icon">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="2" y="4" width="14" height="10" rx="1"/>
+                  <path d="M7 7l4 2-4 2V7z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="dropzone__title">Upload video file</div>
+              <div class="dropzone__hint">MP4 or AVI · Max 500 MB</div>
+              <div class="dropzone__filename" data-filename></div>
+              <input type="file" accept="video/mp4,video/x-msvideo,.mp4,.avi" data-input="video" />
+            </label>
+
+            <label class="dropzone" id="dz-srt">
+              <div class="dropzone__step">Step 02 — Telemetry</div>
+              <div class="dropzone__icon">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="2" width="12" height="14" rx="1"/>
+                  <path d="M6 6h6M6 9h6M6 12h4"/>
+                </svg>
+              </div>
+              <div class="dropzone__title">Upload SRT file</div>
+              <div class="dropzone__hint">DJI Mini 2 / Mavic format</div>
+              <div class="dropzone__filename" data-filename></div>
+              <input type="file" accept=".srt" data-input="srt" />
+            </label>
+          </div>
+
+          <!-- Thresholds -->
+          <div class="thresholds">
+            <div class="thresholds__head">
+              <h3>Detection thresholds</h3>
+              <span class="label">Adjust to mission conditions</span>
+            </div>
+
+            <div class="thresholds__grid">
+              <div>
+                <div class="threshold__head">
+                  <span class="label">Confidence</span>
+                  <span class="threshold__value" id="conf-val">0.35</span>
+                </div>
+                <input type="range" class="slider" id="conf-slider" min="0.1" max="0.9" step="0.05" value="0.35" />
+                <div class="threshold__scale">
+                  <span>Permissive · 0.10</span>
+                  <span>Strict · 0.90</span>
+                </div>
+              </div>
+
+              <div>
+                <div class="threshold__head">
+                  <span class="label">IoU agreement</span>
+                  <span class="threshold__value" id="iou-val">0.50</span>
+                </div>
+                <input type="range" class="slider" id="iou-slider" min="0.1" max="0.9" step="0.05" value="0.50" />
+                <div class="threshold__scale">
+                  <span>Loose · 0.10</span>
+                  <span>Tight · 0.90</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="upload-actions">
+            <span class="upload-actions__hint">Submission triggers batch processing. Progress is monitored on the next screen.</span>
+            <div style="display: flex; gap: var(--s-2);">
+              <button type="button" class="btn btn--secondary" data-jump="history">Cancel</button>
+              <button type="submit" class="btn btn--primary" id="submit-mission">
+                Submit mission
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M2 7h10M8 3l4 4-4 4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SCREEN 3 — PROCESSING
+     ============================================================ -->
+<section class="screen" id="screen-processing">
+  <div class="shell">
+    <aside class="sidebar" data-sidebar="processing"></aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__crumb">Operations / <strong>Processing</strong></div>
+        <div class="topbar__session">Session <strong>DEMO-001</strong></div>
+      </header>
+
+      <div class="content">
+        <div class="page-header">
+          <div class="page-header__title">
+            <h1>Processing footage</h1>
+            <span class="eyebrow">Analysis running</span>
+          </div>
+          <p class="page-header__sub">
+            Footage is being analyzed by both detection models. Do not close this tab,
+            the results page will open automatically when processing completes.
+          </p>
+        </div>
+
+        <div class="processing-grid">
+          <div class="processing-stages">
+            <h3>Pipeline stages</h3>
+
+            <div class="stage is-done">
+              <div class="stage__main">
+                <div class="stage__indicator"></div>
+                <div>
+                  <div class="stage__name">Preparing data</div>
+                  <div class="stage__desc">Telemetry parsed · 1,847 frames indexed</div>
+                </div>
+              </div>
+              <div class="stage__status">Done</div>
+            </div>
+
+            <div class="stage is-active" id="active-stage">
+              <div class="stage__main">
+                <div class="stage__indicator"></div>
+                <div>
+                  <div class="stage__name">Analyzing footage</div>
+                  <div class="stage__desc"><span id="frames-processed">5,756</span> of 21,320 frames scanned</div>
+                </div>
+              </div>
+              <div class="stage__status">Running</div>
+            </div>
+
+            <div class="stage is-pending">
+              <div class="stage__main">
+                <div class="stage__indicator"></div>
+                <div>
+                  <div class="stage__name">Reviewing detections</div>
+                  <div class="stage__desc">Consensus engine · IoU cross-validation</div>
+                </div>
+              </div>
+              <div class="stage__status">Pending</div>
+            </div>
+
+            <div class="stage is-pending">
+              <div class="stage__main">
+                <div class="stage__indicator"></div>
+                <div>
+                  <div class="stage__name">Generating results</div>
+                  <div class="stage__desc">Aggregating tracks · Building map</div>
+                </div>
+              </div>
+              <div class="stage__status">Pending</div>
+            </div>
+          </div>
+
+          <div class="processing-monitor">
+            <div class="monitor__head">
+              <span>Session DEMO-001</span>
+              <span>ETA <span id="eta">04:12</span></span>
+            </div>
+
+            <div class="gauge">
+              <svg viewBox="0 0 100 100">
+                <circle class="gauge__track" cx="50" cy="50" r="44" />
+                <circle class="gauge__bar" cx="50" cy="50" r="44"
+                        stroke-dasharray="276.46"
+                        stroke-dashoffset="201.8"
+                        id="gauge-bar"/>
+              </svg>
+              <div class="gauge__center">
+                <span class="gauge__pct" id="pct">27%</span>
+                <span class="gauge__lbl">Progress</span>
+              </div>
+            </div>
+
+            <div class="monitor-stats">
+              <div>
+                <div class="monitor-stat__num" id="stat-frames">5,756</div>
+                <div class="monitor-stat__lbl">Frames</div>
+              </div>
+              <div>
+                <div class="monitor-stat__num" id="stat-detections">1</div>
+                <div class="monitor-stat__lbl">Detections</div>
+              </div>
+              <div>
+                <div class="monitor-stat__num" id="stat-elapsed">8:01</div>
+                <div class="monitor-stat__lbl">Elapsed</div>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn--ghost" style="margin-top: var(--s-5);" data-jump="history">
+              Cancel processing
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SCREEN 4 — RESULTS DASHBOARD
+     ============================================================ -->
+<section class="screen" id="screen-results">
+  <div class="shell">
+    <aside class="sidebar" data-sidebar="results"></aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__crumb">Operations / <strong>Results</strong></div>
+        <div class="topbar__session">Session <strong>DEMO-001</strong></div>
+      </header>
+
+      <div class="results-shell">
+        <!-- Detection list -->
+        <div class="results-list">
+          <div class="results-list__head">
+            <div class="results-list__title">
+              <h2>Detections</h2>
+              <span class="results-list__title-count" id="track-count">7 tracks</span>
+            </div>
+            <div class="results-list__filters" id="filters">
+              <button type="button" class="chip is-active" data-filter="all">All</button>
+              <button type="button" class="chip" data-filter="HIGH">High</button>
+              <button type="button" class="chip" data-filter="ALERT">Alert</button>
+            </div>
+          </div>
+          <div class="detection-list" id="detection-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Map area -->
+        <div class="results-map-wrap">
+          <div class="results-toolbar">
+            <div class="results-toolbar__stats">
+              <div class="stat-pill">
+                <span class="stat-pill__num" id="total-num">7</span>
+                <span class="stat-pill__lbl">Total</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-pill__num" style="color: var(--high);" id="high-num">4</span>
+                <span class="stat-pill__lbl">High</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-pill__num" style="color: var(--alert);" id="alert-num">3</span>
+                <span class="stat-pill__lbl">Alert</span>
+              </div>
+            </div>
+            <div class="results-toolbar__exports">
+                <button type="button" class="btn btn--secondary" data-export="gpx">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M7 2v8M3.5 6.5L7 10l3.5-3.5M2 12h10"/>
+                </svg>
+                Export GPX
+              </button>
+                <button type="button" class="btn btn--secondary" data-export="pdf">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M3 2h6l3 3v7a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zM9 2v3h3"/>
+                </svg>
+                Generate PDF
+              </button>
+            </div>
+          </div>
+
+          <div id="daleel-map"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SCREEN 5 — SESSION HISTORY
+     ============================================================ -->
+<section class="screen" id="screen-history">
+  <div class="shell">
+    <aside class="sidebar" data-sidebar="history"></aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__crumb">Operations / <strong>History</strong></div>
+        <div class="topbar__session">Session <strong>DEMO-001</strong></div>
+      </header>
+
+      <div class="content">
+        <div class="page-header">
+          <div class="page-header__title">
+            <h1>Session history</h1>
+            <span class="eyebrow">Past missions</span>
+          </div>
+          <p class="page-header__sub">
+            Past sessions remain available for review without reprocessing.
+            Click any row to open its preserved results dashboard.
+          </p>
+        </div>
+
+        <div class="history-search">
+          <input type="search" placeholder="Search by session ID or video filename" />
+          <button type="button" class="btn btn--primary" data-jump="upload">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M7 2v10M2 7h10"/>
+            </svg>
+            New analysis
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Session</th>
+                <th>Video</th>
+                <th>Submitted</th>
+                <th>Detections</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="history-tbody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SCREEN 6 — ACCOUNT MANAGEMENT (admin)
+     ============================================================ -->
+<section class="screen" id="screen-admin">
+  <div class="shell">
+    <aside class="sidebar" data-sidebar="admin"></aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__crumb">Administration / <strong>Accounts</strong></div>
+        <div class="topbar__session" id="admin-topbar-session">Display example: <strong>Example Analyst</strong></div>
+      </header>
+
+      <div class="content">
+        <div class="page-header">
+          <div class="page-header__title">
+            <h1>Account management</h1>
+            <span class="eyebrow">Administrator only</span>
+          </div>
+          <p class="page-header__sub">
+            Provision new analyst accounts. Self-registration is disabled by policy, all access is created here.
+          </p>
+        </div>
+
+        <div class="admin-grid">
+          <div class="account-list">
+            <div class="account-list__head">
+              <h3>Active accounts</h3>
+              <span class="label" id="account-count">5 display-only rows</span>
+            </div>
+            <div id="account-rows">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <form class="create-form" id="create-account-form" novalidate>
+            <h3>New account</h3>
+            <p class="create-form__sub">
+              Display-only account form. No credentials are accepted and no accounts are created.
+            </p>
+
+            <div class="field">
+              <label class="field__label" for="new-fullname">Full name</label>
+              <input class="field__input" id="new-fullname" type="text" placeholder="Example Analyst" autocomplete="off" readonly aria-readonly="true" />
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="new-username">Username</label>
+              <input class="field__input" id="new-username" type="text" placeholder="Username" autocomplete="off" readonly aria-readonly="true" />
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="new-password">Password</label>
+              <div class="field__pw-wrap">
+                <input class="field__input" id="new-password" type="password" placeholder="Password" autocomplete="off" readonly aria-readonly="true" />
+                <button type="button" class="field__pw-toggle" aria-label="Toggle password visibility" onclick="(function(btn){var inp=btn.previousElementSibling;var show=inp.type==='password';inp.type=show?'text':'password';btn.innerHTML=show?'<svg width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.8\'><path d=\'M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24\'/><line x1=\'1\' y1=\'1\' x2=\'23\' y2=\'23\'/></svg>':'<svg width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.8\'><path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'/><circle cx=\'12\' cy=\'12\' r=\'3\'/></svg>';})(this)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+              <div class="field__hint">Display-only Password placeholder; no password is stored.</div>
+            </div>
+
+            <div class="field">
+              <label class="field__label">Role</label>
+              <div class="role-toggle">
+                <input type="radio" id="role-analyst" name="role" value="analyst" checked />
+                <label for="role-analyst">
+                  <strong>Analyst</strong>
+                  <span>Submit and review analyses</span>
+                </label>
+                <input type="radio" id="role-admin" name="role" value="admin" />
+                <label for="role-admin">
+                  <strong>Admin</strong>
+                  <span>Manage accounts only</span>
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn--primary btn--block" style="margin-top: var(--s-4);">
+              Create account
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M2 7h10M8 3l4 4-4 4"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SCREEN 10 — RESET PASSWORD (first login for new accounts)
+     ============================================================ -->
+<section class="screen" id="screen-reset">
+  <div class="reset-wrap">
+    <div class="reset-form">
+      <h2 style="margin-top:var(--s-2);margin-bottom:var(--s-2);">Set new password</h2>
+
+      <div class="reset-banner">
+        <strong>Action required</strong>
+        Fictional password-reset page state. This display-only reference cannot set passwords or grant access.
+      </div>
+
+      <form id="reset-form" novalidate>
+        <div class="field">
+          <label class="field__label" for="reset-new">New password</label>
+          <div class="field__pw-wrap">
+            <input class="field__input" id="reset-new" type="password" placeholder="Password" autocomplete="off" readonly aria-readonly="true" />
+            <button type="button" class="field__pw-toggle" aria-label="Toggle password visibility" onclick="(function(btn){var inp=btn.previousElementSibling;var show=inp.type==='password';inp.type=show?'text':'password';btn.innerHTML=show?'<svg width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.8\'><path d=\'M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24\'/><line x1=\'1\' y1=\'1\' x2=\'23\' y2=\'23\'/></svg>':'<svg width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.8\'><path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'/><circle cx=\'12\' cy=\'12\' r=\'3\'/></svg>';})(this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label" for="reset-confirm">Confirm password</label>
+          <div class="field__pw-wrap">
+            <input class="field__input" id="reset-confirm" type="password" placeholder="Password" autocomplete="off" readonly aria-readonly="true" />
+            <button type="button" class="field__pw-toggle" aria-label="Toggle password visibility" onclick="(function(btn){var inp=btn.previousElementSibling;var show=inp.type==='password';inp.type=show?'text':'password';btn.innerHTML=show?'<svg width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.8\'><path d=\'M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24\'/><line x1=\'1\' y1=\'1\' x2=\'23\' y2=\'23\'/></svg>':'<svg width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.8\'><path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'/><circle cx=\'12\' cy=\'12\' r=\'3\'/></svg>';})(this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="field__error" id="reset-error">Passwords do not match. Please try again.</div>
+
+        <button type="submit" class="btn btn--primary btn--block" style="margin-top:var(--s-3);">
+          Set password &amp; sign in
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 7h10M8 3l4 4-4 4"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SCREEN 9 — FORGOT PASSWORD
+     ============================================================ -->
+<section class="screen" id="screen-forgot">
+  <div class="forgot-wrap">
+    <div class="forgot-form">
+      <div class="eyebrow">DALEEL / Access recovery</div>
+      <h2 style="margin-top:var(--s-2);margin-bottom:var(--s-2);">Reset password</h2>
+      <p class="forgot-form__sub">
+        Fictional access-recovery page state. This display-only reference does not send messages or look up accounts.
+      </p>
+
+      <div class="forgot-success" id="forgot-success">
+        Display-only confirmation example. No request was sent and no account was looked up.
+        <br/><br/>Return to the <a onclick="showScreen('login')" style="color:var(--high);text-decoration:underline;cursor:pointer;">sign-in page</a>.
+      </div>
+
+      <form id="forgot-form" novalidate>
+        <div class="field">
+          <label class="field__label" for="forgot-username">Username</label>
+          <input class="field__input" id="forgot-username" type="text" placeholder="Username" autocomplete="off" readonly aria-readonly="true" />
+        </div>
+        <div class="field__error" id="forgot-error">Please enter your username.</div>
+
+        <button type="submit" class="btn btn--primary btn--block" style="margin-top:var(--s-3);">
+          Send reset link
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 7h10M8 3l4 4-4 4"/>
+          </svg>
+        </button>
+      </form>
+
+      <div class="forgot-back">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 7H2M6 3l-4 4 4 4"/></svg>
+        <a onclick="showScreen('login')">Back to sign in</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================================================
+     LEAFLET + APP JS
+     ============================================================ -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ============================================================
+   APP STATE — minimal, no framework
+   ============================================================ */
+const App = {
+  currentScreen: 'login',
+  detections: [
+    { id: 'DET-001', tier: 'HIGH',  cls: 'person',  lat: 0.000, lng: 0.000, conf_n: 0.71, conf_s: 0.68, iou: 0.74, frames: 184, frame_index: 18420, time: '02:11:14', span: '02:11:04 → 02:11:38' },
+    { id: 'DET-002', tier: 'HIGH',  cls: 'vehicle', lat: 0.001, lng: 0.001, conf_n: 0.83, conf_s: 0.79, iou: 0.81, frames: 312, frame_index: 24386, time: '02:14:36', span: '02:14:22 → 02:15:16' },
+    { id: 'DET-003', tier: 'ALERT', cls: 'person',  lat: 0.002, lng: 0.002, conf_n: 0.42, conf_s: null, iou: null, frames:  68, frame_index: 17612, time: '02:09:54', span: '02:09:48 → 02:10:00' },
+    { id: 'DET-004', tier: 'HIGH',  cls: 'person',  lat: 0.003, lng: 0.003, conf_n: 0.66, conf_s: 0.61, iou: 0.69, frames: 226, frame_index: 32710, time: '02:18:25', span: '02:18:12 → 02:18:51' },
+    { id: 'DET-005', tier: 'ALERT', cls: 'vehicle', lat: 0.004, lng: 0.004, conf_n: null, conf_s: 0.39, iou: null, frames:  44, frame_index: 37844, time: '02:21:07', span: '02:21:03 → 02:21:11' },
+    { id: 'DET-006', tier: 'HIGH',  cls: 'person',  lat: 0.005, lng: 0.005, conf_n: 0.74, conf_s: 0.70, iou: 0.77, frames: 198, frame_index: 29550, time: '02:16:42', span: '02:16:30 → 02:17:04' },
+    { id: 'DET-007', tier: 'ALERT', cls: 'person',  lat: 0.006, lng: 0.006, conf_n: 0.51, conf_s: null, iou: null, frames:  92, frame_index: 35710, time: '02:20:02', span: '02:19:55 → 02:20:11' },
+  ],
+  history: [
+    { id: 'DEMO-001', video: 'desert_search_01.mp4', size: '241 MB',  date: 'Today · 13:42',      dateAbs: 'Apr 25, 2026',  high: 4, alert: 3, status: 'complete' },
+    { id: 'DEMO-002', video: 'desert_search_02.mp4', size: '227 MB', date: 'Yesterday · 19:15', dateAbs: 'Apr 24, 2026',  high: 1, alert: 2, status: 'complete' },
+    { id: 'DEMO-003', video: 'desert_search_03.mp4',     size: '94 MB',   date: 'Apr 22 · 16:03',   dateAbs: 'Apr 22, 2026',  high: 0, alert: 0, status: 'empty' },
+    { id: 'DEMO-004', video: 'desert_search_04.mp4',  size: '168 MB',  date: 'Apr 18 · 08:21',   dateAbs: 'Apr 18, 2026',  high: 8, alert: 4, status: 'complete' },
+    { id: 'DEMO-005', video: 'desert_search_05.mp4',  size: '371 MB',  date: 'Apr 14 · 10:58',   dateAbs: 'Apr 14, 2026',  high: 2, alert: 3, status: 'complete' },
+  ],
+  filter: 'all',
+  selectedDetection: null,
+  activeFrame: null,
+  map: null,
+  markers: {}
+};
+
+/* ============================================================
+   ROUTING — show one screen at a time
+   ============================================================ */
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('is-active'));
+  const target = document.getElementById('screen-' + name);
+  if (!target) return;
+  target.classList.add('is-active');
+  App.currentScreen = name;
+
+  // Update demo jumper
+  document.querySelectorAll('.demo-jumper button').forEach(b => {
+    b.classList.toggle('is-active', b.dataset.jump === name);
+  });
+
+  // Update sidebar in case it shows progress count etc.
+  document.querySelectorAll('[data-sidebar]').forEach(renderSidebar);
+
+  // Lazy-init heavy screens
+  if (name === 'results' && !App.map) {
+    setTimeout(initMap, 50);
+  }
+  if (name === 'results') {
+    renderDetectionList();
+  }
+  if (name === 'history') {
+    renderHistory();
+  }
+  if (name === 'admin') {
+    renderAccounts();
+    // Account screen is a display-only fictional layout, not authenticated state.
+  }
+  if (name === 'forgot') {
+    document.getElementById('forgot-form').style.display = 'block';
+    document.getElementById('forgot-success').classList.remove('is-visible');
+    document.getElementById('forgot-error').classList.remove('is-visible');
+    document.getElementById('forgot-username').value = '';
+  }
+}
+
+document.addEventListener('click', (e) => {
+  const jump = e.target.closest('[data-jump]');
+  if (jump) {
+    e.preventDefault();
+    showScreen(jump.dataset.jump);
+    return;
+  }
+  const logout = e.target.closest('[data-logout]');
+  if (logout) {
+    e.preventDefault();
+    handleLogout();
+    return;
+  }
+  const exp = e.target.closest('[data-export]');
+  if (exp) {
+    e.preventDefault();
+    const kind = exp.dataset.export;
+    const session = 'DEMO-001';
+    if (kind === 'gpx') {
+      showToast('GPX waypoints exported', `${session}.gpx`);
+    } else if (kind === 'pdf') {
+      showToast('Report generated', `${session}.pdf`);
+    }
+    return;
+  }
+  const fc = e.target.closest('[data-frame-close]');
+  if (fc) {
+    e.preventDefault();
+    closeFrameModal();
+    return;
+  }
+  const cc = e.target.closest('[data-copy-coord]');
+  if (cc) {
+    e.preventDefault();
+    if (App.activeFrame) {
+      const text = `${App.activeFrame.lat.toFixed(6)}, ${App.activeFrame.lng.toFixed(6)}`;
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(text).then(
+          () => showToast('Demo coordinate copied', text),
+          () => showToast('Demo coordinate copied', text)
+        );
+      } else {
+        showToast('Demo coordinate copied', text);
+      }
+    }
+    return;
+  }
+});
+
+// Close frame modal on backdrop click + Escape key
+document.getElementById('frame-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'frame-modal') closeFrameModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeFrameModal();
+});
+
+
+/* ============================================================
+   LOGOUT — clear form, return to login screen
+   ============================================================ */
+function handleLogout() {
+  // Stop any running processing simulation
+  if (processingTimer) {
+    clearInterval(processingTimer);
+    processingTimer = null;
+  }
+  // Close any open modals
+  closeFrameModal();
+  // Clear login fields
+  const u = document.getElementById('login-username');
+  const p = document.getElementById('login-password');
+  if (u) u.value = '';
+  if (p) p.value = '';
+  document.getElementById('login-error')?.classList.remove('is-visible');
+  // Reset selection state so reopening results doesn't keep stale highlight
+  App.selectedDetection = null;
+  App.filter = 'all';
+  showScreen('login');
+}
+
+
+/* ============================================================
+   TOAST — confirmation for export / generate actions
+   ============================================================ */
+let toastTimer = null;
+function showToast(msg, idLabel) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-id').textContent = idLabel || '';
+  t.classList.add('is-visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('is-visible'), 2800);
+}
+
+
+/* ============================================================
+   SIDEBAR — rendered into every authenticated screen
+   ============================================================ */
+function renderSidebar(el) {
+  const current = el.dataset.sidebar;
+  const isAdminScreen = current === 'admin';
+  const isAccountScreen = current === 'profile' || current === 'settings';
+  el.innerHTML = `
+    <div class="sidebar__brand">DALEEL</div>
+
+    ${isAdminScreen ? `
+      <div>
+        <div class="sidebar__section-label">Administration</div>
+        <nav class="sidebar__nav">
+          <button class="sidebar__link is-active" data-jump="admin">
+            <span>Accounts</span>
+            <span class="sidebar__link-count">5</span>
+          </button>
+        </nav>
+      </div>
+    ` : `
+      <div>
+        <div class="sidebar__section-label">Operations</div>
+        <nav class="sidebar__nav">
+          <button class="sidebar__link ${current === 'upload' ? 'is-active' : ''}" data-jump="upload">
+            <span>New analysis</span>
+          </button>
+          <button class="sidebar__link ${current === 'history' ? 'is-active' : ''}" data-jump="history">
+            <span>History</span>
+            <span class="sidebar__link-count">${App.history.length}</span>
+          </button>
+          ${current === 'processing' ? `
+            <button class="sidebar__link is-active" data-jump="processing">
+              <span>Processing</span>
+              <span class="sidebar__link-count" id="sidebar-pct">27%</span>
+            </button>` : ''}
+          ${current === 'results' ? `
+            <button class="sidebar__link is-active" data-jump="results">
+              <span>Current results</span>
+              <span class="sidebar__link-count">${App.detections.length}</span>
+            </button>` : ''}
+        </nav>
+      </div>
+    `}
+
+    <div class="sidebar__user">
+      <div class="sidebar__avatar">${isAdminScreen ? 'EA' : 'AU'}</div>
+      <div class="sidebar__user-meta">
+        <strong>${isAdminScreen ? 'Example Analyst' : 'Analyst User'}</strong>
+        <span>Display-only example</span>
+      </div>
+      <button class="sidebar__logout" type="button" data-logout title="Sign out" aria-label="Sign out">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      </button>
+    </div>
+  `;
+}
+
+
+/* ============================================================
+   LOGIN SCREEN
+   ============================================================ */
+// No credential reading, lookup, login state, or authentication simulation.
+document.getElementById('login-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  showToast('Display-only login. Use JUMP TO to inspect the screens.');
+});
+
+
+/* ============================================================
+   UPLOAD SCREEN
+   ============================================================ */
+function bindDropzone(zoneId) {
+  const zone = document.getElementById(zoneId);
+  const input = zone.querySelector('input[type="file"]');
+  const filenameEl = zone.querySelector('[data-filename]');
+
+  input.addEventListener('change', () => {
+    if (input.files && input.files[0]) {
+      const f = input.files[0];
+      // 500MB validation for video
+      if (input.dataset.input === 'video' && f.size > 500 * 1024 * 1024) {
+        document.getElementById('upload-error').classList.add('is-visible');
+        input.value = '';
+        return;
+      }
+      document.getElementById('upload-error').classList.remove('is-visible');
+      zone.classList.add('is-filled');
+      filenameEl.textContent = `✓ ${f.name}`;
+    } else {
+      zone.classList.remove('is-filled');
+      filenameEl.textContent = '';
+    }
+  });
+}
+bindDropzone('dz-video');
+bindDropzone('dz-srt');
+
+const confSlider = document.getElementById('conf-slider');
+const iouSlider = document.getElementById('iou-slider');
+confSlider.addEventListener('input', () => {
+  document.getElementById('conf-val').textContent = parseFloat(confSlider.value).toFixed(2);
+});
+iouSlider.addEventListener('input', () => {
+  document.getElementById('iou-val').textContent = parseFloat(iouSlider.value).toFixed(2);
+});
+
+document.getElementById('upload-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  // Demo: skip strict validation, advance
+  showScreen('processing');
+  startProcessingSimulation();
+});
+
+
+/* ============================================================
+   PROCESSING SCREEN — light animated demo
+   ============================================================ */
+let processingTimer = null;
+function startProcessingSimulation() {
+  let pct = 27;
+  const bar = document.getElementById('gauge-bar');
+  const pctEl = document.getElementById('pct');
+  const framesEl = document.getElementById('frames-processed');
+  const statFrames = document.getElementById('stat-frames');
+  const statDetections = document.getElementById('stat-detections');
+  const statElapsed = document.getElementById('stat-elapsed');
+  const eta = document.getElementById('eta');
+
+  if (processingTimer) clearInterval(processingTimer);
+  processingTimer = setInterval(() => {
+    pct = Math.min(100, pct + 1.2);
+    const offset = 276.46 * (1 - pct / 100);
+    bar.setAttribute('stroke-dashoffset', offset);
+    pctEl.textContent = Math.floor(pct) + '%';
+
+    const frames = Math.floor((pct / 100) * 21320);
+    framesEl.textContent = frames.toLocaleString();
+    statFrames.textContent = frames.toLocaleString();
+    statDetections.textContent = Math.floor(frames / 3000);
+
+    const sidebarPct = document.getElementById('sidebar-pct');
+    if (sidebarPct) sidebarPct.textContent = Math.floor(pct) + '%';
+
+    if (pct >= 100) {
+      clearInterval(processingTimer);
+      // Mark all stages done in UI
+      document.querySelectorAll('#screen-processing .stage').forEach(s => {
+        s.classList.remove('is-active', 'is-pending');
+        s.classList.add('is-done');
+        s.querySelector('.stage__status').textContent = 'Done';
+      });
+      setTimeout(() => showScreen('results'), 800);
+    }
+  }, 200);
+}
+
+function detectionIconSvg(cls) {
+  if (cls === 'person') {
+    return `<svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M5 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2"/></svg>`;
+  }
+  return `<svg viewBox="0 0 24 24"><path d="M3 13l2-5a2 2 0 0 1 1.9-1.4h10.2A2 2 0 0 1 19 8l2 5"/><path d="M3 13h18v4a1 1 0 0 1-1 1h-1a2 2 0 0 1-4 0H9a2 2 0 0 1-4 0H4a1 1 0 0 1-1-1v-4z"/></svg>`;
+}
+
+/* ============================================================
+   RESULTS SCREEN
+   ============================================================ */
+function renderDetectionList() {
+  const list = document.getElementById('detection-list');
+  const filtered = App.detections.filter(d => App.filter === 'all' || d.tier === App.filter);
+
+  list.innerHTML = filtered.map(d => `
+    <button class="detection ${App.selectedDetection === d.id ? 'is-selected' : ''}" data-det="${d.id}">
+      <div class="detection__icon detection__icon--${d.tier === 'HIGH' ? 'high' : 'alert'}">${detectionIconSvg(d.cls)}</div>
+      <div class="detection__body">
+        <div class="detection__id">${d.id}</div>
+        <div class="detection__meta">${formatLat(d.lat)} · ${formatLng(d.lng)}</div>
+        <div class="detection__class">${d.cls}</div>
+      </div>
+      <div class="detection__tier">
+        <span class="tier-badge tier-badge--${d.tier === 'HIGH' ? 'high' : 'alert'}">${d.tier}</span>
+        <span class="detection__class">${d.frames}f</span>
+      </div>
+    </button>
+  `).join('');
+
+  // Bind selection
+  list.querySelectorAll('.detection').forEach(el => {
+    el.addEventListener('click', () => selectDetection(el.dataset.det, { source: 'list' }));
+  });
+
+  // Counts
+  const high = App.detections.filter(d => d.tier === 'HIGH').length;
+  const alert = App.detections.filter(d => d.tier === 'ALERT').length;
+  document.getElementById('total-num').textContent = App.detections.length;
+  document.getElementById('high-num').textContent = high;
+  document.getElementById('alert-num').textContent = alert;
+  document.getElementById('track-count').textContent = App.detections.length + ' tracks';
+}
+
+document.getElementById('filters').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-filter]');
+  if (!btn) return;
+  document.querySelectorAll('#filters .chip').forEach(c => c.classList.remove('is-active'));
+  btn.classList.add('is-active');
+  App.filter = btn.dataset.filter;
+  renderDetectionList();
+});
+
+function selectDetection(id, opts) {
+  opts = opts || {};
+  App.selectedDetection = id;
+  renderDetectionList();
+  // Highlight marker + center map
+  Object.values(App.markers).forEach(m => {
+    if (m._icon) m._icon.querySelector('.daleel-marker')?.classList.remove('is-active');
+  });
+  if (App.markers[id]) {
+    App.map.flyTo(App.markers[id].getLatLng(), 16, { duration: 0.5 });
+    if (App.markers[id]._icon) {
+      App.markers[id]._icon.querySelector('.daleel-marker')?.classList.add('is-active');
+    }
+  }
+  // Two entry points:
+  //   - From the list  → open the full frame modal (analyst verification)
+  //   - From a marker  → just keep the small popup the marker already has
+  if (opts.source === 'list') {
+    const det = App.detections.find(d => d.id === id);
+    if (det) openFrameModal(det);
+  } else if (opts.source === 'marker') {
+    App.markers[id]?.openPopup();
+  }
+}
+
+/* ============================================================
+   FRAME MODAL — analyst verification of the detection frame
+   In production this image will be the actual extracted video
+   frame (cv2.imwrite at frame_index) with the YOLOv8 bbox drawn
+   on it. Here we render a placeholder SVG with overlay metadata
+   in the same coordinate system, so the layout and chrome are
+   already final.
+   ============================================================ */
+function openFrameModal(d) {
+  const isHigh = d.tier === 'HIGH';
+
+  // Banner
+  const banner = document.getElementById('frame-banner');
+  banner.className = 'frame-info__banner ' + (isHigh ? 'frame-info__banner--high' : 'frame-info__banner--alert');
+  document.getElementById('frame-tier-text').textContent =
+    isHigh ? 'High confidence · Both models agreed' : 'Alert · Single model only';
+
+  // Header
+  document.getElementById('frame-id').textContent = d.id + ' · TRACK';
+  document.getElementById('frame-modal-class').textContent = d.cls;
+
+  // Grid
+  document.getElementById('frame-lat').textContent = formatLat(d.lat);
+  document.getElementById('frame-lng').textContent = formatLng(d.lng);
+  document.getElementById('frame-index').textContent = d.frame_index.toLocaleString();
+  document.getElementById('frame-time').textContent = d.time;
+  document.getElementById('frame-span').textContent = d.span;
+  // Approx duration from frame count, assuming 30fps
+  const seconds = (d.frames / 30);
+  document.getElementById('frame-dur').textContent =
+    `${d.frames} frames · ~${seconds.toFixed(1)}s`;
+
+  // Confidence bars
+  setBar('frame-bar-n', 'frame-val-n', d.conf_n, isHigh);
+  setBar('frame-bar-s', 'frame-val-s', d.conf_s, isHigh);
+  setBar('frame-bar-iou', 'frame-val-iou', d.iou, false);
+
+  // Frame meta strip
+  document.getElementById('frame-meta').textContent =
+    `FRAME ${d.frame_index} · ${d.time} ·`;
+
+  // Render annotated frame
+  const imgWrap = document.getElementById('frame-image');
+  imgWrap.querySelector('svg')?.remove();
+  imgWrap.insertAdjacentHTML('afterbegin', buildAnnotatedFrame(d));
+
+  // Stash detection for "copy coordinate" action
+  App.activeFrame = d;
+
+  document.getElementById('frame-modal').classList.add('is-open');
+}
+
+function setBar(barId, valId, value, isHigh) {
+  const bar = document.getElementById(barId);
+  const val = document.getElementById(valId);
+  if (value === null || value === undefined) {
+    bar.style.width = '0%';
+    bar.classList.remove('score-bar__fill--high', 'score-bar__fill--alert');
+    val.textContent = '—';
+    return;
+  }
+  bar.style.width = (value * 100).toFixed(0) + '%';
+  // Only color the YOLO bars by tier; the IoU bar stays muted
+  if (barId !== 'frame-bar-iou') {
+    bar.classList.toggle('score-bar__fill--high', isHigh);
+    bar.classList.toggle('score-bar__fill--alert', !isHigh);
+  }
+  val.textContent = value.toFixed(2);
+}
+
+function closeFrameModal() {
+  document.getElementById('frame-modal').classList.remove('is-open');
+  App.activeFrame = null;
+}
+
+/* Annotated frame placeholder — SVG composition that mimics a
+   nadir-view desert frame with the YOLO bbox + label. Replaced
+   in production by an <img> of the real extracted frame. */
+function buildAnnotatedFrame(d) {
+  const isHigh = d.tier === 'HIGH';
+  const boxColor = isHigh ? '#4F7A4A' : '#B5832E';
+  const boxLabelBg = isHigh ? '#4F7A4A' : '#B5832E';
+  const subjectShape = d.cls === 'person'
+    ? `<ellipse cx="480" cy="298" rx="7" ry="3" fill="#2a2418" opacity="0.75"/>
+       <rect x="477" y="282" width="6" height="14" fill="#8B6B3F" rx="1"/>
+       <circle cx="480" cy="280" r="3.5" fill="#6B4F2F"/>`
+    : `<rect x="462" y="276" width="36" height="18" fill="#1a1912" rx="1" stroke="#2a2720"/>
+       <rect x="467" y="279" width="26" height="7" fill="#2a2a35" opacity="0.7"/>
+       <circle cx="470" cy="295" r="2.5" fill="#0a0a0a"/>
+       <circle cx="490" cy="295" r="2.5" fill="#0a0a0a"/>`;
+  const conf = Math.max(d.conf_n || 0, d.conf_s || 0);
+
+  return `<svg viewBox="0 0 960 540" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <radialGradient id="fbg-${d.id}" cx="50%" cy="45%" r="70%">
+        <stop offset="0%" stop-color="#C99B6D"/>
+        <stop offset="50%" stop-color="#A67D4F"/>
+        <stop offset="100%" stop-color="#614432"/>
+      </radialGradient>
+      <pattern id="fgr-${d.id}" width="4" height="4" patternUnits="userSpaceOnUse">
+        <rect width="4" height="4" fill="transparent"/>
+        <circle cx="1" cy="2" r="0.3" fill="rgba(0,0,0,0.15)"/>
+        <circle cx="3" cy="3" r="0.25" fill="rgba(255,255,255,0.08)"/>
+      </pattern>
+    </defs>
+
+    <!-- Desert background -->
+    <rect width="960" height="540" fill="url(#fbg-${d.id})"/>
+
+    <!-- Dune ridges -->
+    <path d="M0 180 Q 240 150,480 200 T 960 170" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
+    <path d="M0 280 Q 300 250,560 310 T 960 290" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
+    <ellipse cx="180" cy="230" rx="200" ry="50" fill="rgba(0,0,0,0.18)"/>
+    <ellipse cx="760" cy="340" rx="220" ry="60" fill="rgba(0,0,0,0.14)"/>
+
+    <!-- Subject (person/vehicle) -->
+    ${subjectShape}
+
+    <!-- Grain overlay -->
+    <rect width="960" height="540" fill="url(#fgr-${d.id})" opacity="0.4"/>
+
+    <!-- Bounding box + corner brackets -->
+    <rect x="455" y="262" width="50" height="52" fill="none" stroke="${boxColor}" stroke-width="2"/>
+    <path d="M450 262 L450 275 M450 262 L463 262" stroke="${boxColor}" stroke-width="2" fill="none"/>
+    <path d="M510 262 L510 275 M510 262 L497 262" stroke="${boxColor}" stroke-width="2" fill="none"/>
+    <path d="M450 314 L450 301 M450 314 L463 314" stroke="${boxColor}" stroke-width="2" fill="none"/>
+    <path d="M510 314 L510 301 M510 314 L497 314" stroke="${boxColor}" stroke-width="2" fill="none"/>
+
+    <!-- Label tag above bbox -->
+    <rect x="455" y="244" width="100" height="16" fill="${boxLabelBg}"/>
+    <text x="460" y="256" font-family="JetBrains Mono,monospace" font-size="10" font-weight="600"
+          fill="#FAF6EF" letter-spacing="1.2">
+      ${d.cls.toUpperCase()} · ${(conf * 100).toFixed(0)}%
+    </text>
+
+    <!-- Telemetry overlay (HUD corners) -->
+    <g font-family="JetBrains Mono,monospace" font-size="11" fill="rgba(250,246,239,0.78)" letter-spacing="0.5">
+      <text x="20" y="30">DEMO LAT ${d.lat.toFixed(6)}°N</text>
+      <text x="20" y="48">DEMO LNG ${d.lng.toFixed(6)}°E</text>
+      <text x="20" y="520">ALT 82m · YAW 147°</text>
+      <text x="940" y="30" text-anchor="end">FRAME ${d.frame_index}</text>
+      <text x="940" y="48" text-anchor="end">${d.time}</text>
+      <text x="940" y="520" text-anchor="end">CAM NADIR · 24mm</text>
+      <text x="480" y="30" text-anchor="middle" fill="${boxColor}" font-weight="600">
+        ${isHigh ? '◆ HIGH CONFIDENCE' : '▲ ALERT'}
+      </text>
+    </g>
+  </svg>`;
+}
+
+function formatLat(n) {
+  return Math.abs(n).toFixed(4) + '° ' + (n >= 0 ? 'N' : 'S');
+}
+function formatLng(n) {
+  return Math.abs(n).toFixed(4) + '° ' + (n >= 0 ? 'E' : 'W');
+}
+
+function initMap() {
+  const map = L.map('daleel-map', {
+    zoomControl: true,
+    attributionControl: false
+  }).setView([0.003, 0.003], 15);
+
+  // External Esri map reference. All markers use fictional demonstration coordinates.
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19,
+    attribution: 'Esri'
+  }).addTo(map);
+
+  L.control.attribution({ position: 'bottomright', prefix: false })
+    .addAttribution('Imagery © Esri')
+    .addTo(map);
+
+  App.map = map;
+
+  App.detections.forEach(d => {
+    const html = `<div class="daleel-marker daleel-marker--${d.tier === 'HIGH' ? 'high' : 'alert'}"></div>`;
+    const icon = L.divIcon({
+      className: '',
+      html,
+      iconSize: [18, 18],
+      iconAnchor: [9, 9]
+    });
+    const marker = L.marker([d.lat, d.lng], { icon }).addTo(map);
+    marker.bindPopup(buildPopup(d), { closeButton: true, offset: [0, -4] });
+    marker.on('click', () => selectDetection(d.id, { source: 'marker' }));
+    App.markers[d.id] = marker;
+  });
+}
+
+function buildPopup(d) {
+  const tierColor = d.tier === 'HIGH' ? 'high' : 'alert';
+  return `
+    <div class="popup">
+      <div class="popup__thumb">
+        <div class="popup__thumb-bbox">
+          <span class="popup__thumb-label">${d.cls.toUpperCase()} · ${d.id}</span>
+        </div>
+      </div>
+      <div class="popup__body">
+        <div class="popup__id">${d.id}</div>
+        <div class="popup__title">
+          <span class="popup__class">${d.cls.charAt(0).toUpperCase() + d.cls.slice(1)}</span>
+          <span class="tier-badge tier-badge--${tierColor}">${d.tier}</span>
+        </div>
+        <div class="popup__row">
+          <span class="popup__row-lbl">Demo coordinate</span>
+          <span class="popup__row-val">${d.lat.toFixed(6)}, ${d.lng.toFixed(6)}</span>
+        </div>
+        <div class="popup__row">
+          <span class="popup__row-lbl">YOLOv8n</span>
+          <span class="popup__row-val">${d.conf_n !== null ? d.conf_n.toFixed(2) : '—'}</span>
+        </div>
+        <div class="popup__row">
+          <span class="popup__row-lbl">YOLOv8s</span>
+          <span class="popup__row-val">${d.conf_s !== null ? d.conf_s.toFixed(2) : '—'}</span>
+        </div>
+        <div class="popup__row">
+          <span class="popup__row-lbl">Frames</span>
+          <span class="popup__row-val">${d.frames} (${d.span})</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+
+/* ============================================================
+   HISTORY SCREEN
+   ============================================================ */
+function renderHistory() {
+  const tbody = document.getElementById('history-tbody');
+  tbody.innerHTML = App.history.map(s => {
+    const total = s.high + s.alert;
+    const detSummary = s.status === 'empty' ? 'No detections'
+      : `<strong>${total}</strong><span class="tracks-summary">${s.high} HIGH · ${s.alert} ALERT</span>`;
+    const statusBadge = {
+      complete:   '<span class="status-badge status-badge--complete"><span class="status-dot"></span>Complete</span>',
+      processing: '<span class="status-badge status-badge--processing"><span class="status-dot"></span>Processing</span>',
+      empty:      '<span class="status-badge status-badge--empty"><span class="status-dot"></span>Empty</span>',
+      failed:     '<span class="status-badge status-badge--failed"><span class="status-dot"></span>Failed</span>',
+    }[s.status];
+    return `
+      <tr data-jump="results">
+        <td><span class="session-id">${s.id}</span></td>
+        <td>
+          <span class="video-name">${s.video}</span>
+          <span class="video-size">${s.size}</span>
+        </td>
+        <td>
+          <span class="date-rel">${s.date}</span>
+          <span class="date-abs">${s.dateAbs}</span>
+        </td>
+        <td>${detSummary}</td>
+        <td>${statusBadge}</td>
+      </tr>`;
+  }).join('');
+}
+
+
+/* ============================================================
+   ADMIN SCREEN
+   ============================================================ */
+function renderAccounts() {
+  // Decorative repeated rows only: no stored account objects or login identifiers.
+  const wrap = document.getElementById('account-rows');
+  wrap.innerHTML = Array.from({ length: 5 }, (_, index) => `
+    <div class="account-row">
+      <div class="account-row__avatar ${index === 0 ? 'account-row__avatar--admin' : ''}">EU</div>
+      <div>
+        <div class="account-row__name">Example Analyst</div>
+        <div class="account-row__user">Username — display only</div>
+      </div>
+      <div class="account-row__role">${index === 0 ? 'Admin example' : 'Analyst example'}</div>
+      <div class="account-row__last">Fictional UI sample</div>
+      <button class="btn btn--ghost" type="button" style="font-size: 11px;">Manage</button>
+    </div>
+  `).join('');
+  document.getElementById('account-count').textContent = '5 display-only rows';
+  document.querySelectorAll('[data-sidebar]').forEach(renderSidebar);
+}
+
+// Preserve form layouts/page states without collecting or storing credentials.
+document.getElementById('create-account-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  showToast('Display-only form. No account was created.');
+});
+
+document.getElementById('reset-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  showToast('Display-only form. No password was set.');
+});
+
+document.getElementById('forgot-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  document.getElementById('forgot-form').style.display = 'none';
+  document.getElementById('forgot-success').classList.add('is-visible');
+  document.getElementById('forgot-error').classList.remove('is-visible');
+});
+
+// Reset forgot form when navigating away
+/* ============================================================
+   LOGIN — link to forgot password
+   ============================================================ */
+document.querySelector('#screen-login').addEventListener('click', (e) => {
+  if (e.target.closest('[data-forgot]')) {
+    e.preventDefault();
+    showScreen('forgot');
+  }
+});
+
+</script>
+</body>
+</html>

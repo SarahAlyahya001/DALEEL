@@ -1,0 +1,71 @@
+{
+ "images": 548,
+ "dataset": "visdrone",
+ "scene_width": 0,
+ "confidence": 0.42,
+ "weights": {
+  "yolov8n_sar_v1.pt": "21f16d2d72ec76bf020eeeddbc3b59836fa534af43fc88ec3723ce2b7af72e7d",
+  "yolov8s_sar_v1.pt": "90cda60aea2091c62a388954fe192104f9c5dbce96397bee00cbf4d650c40af4"
+ },
+ "seconds": 2114.7,
+ "person": {
+  "gt": 13922,
+  "tp": 7306,
+  "fp": 1429,
+  "fn": 6616,
+  "recall": 0.5247809222812814,
+  "precision": 0.8364052661705781,
+  "fp_per_image": 2.6076642335766422,
+  "ap50": 0.6432880711157114,
+  "by_agreement": {
+   "both models": {
+    "correct": 5352,
+    "false": 444,
+    "precision_wilson95": [
+     0.9234,
+     0.9163,
+     0.93
+    ]
+   },
+   "one model": {
+    "correct": 1954,
+    "false": 985,
+    "precision_wilson95": [
+     0.6649,
+     0.6476,
+     0.6817
+    ]
+   }
+  }
+ },
+ "car": {
+  "gt": 13980,
+  "tp": 11235,
+  "fp": 2038,
+  "fn": 2745,
+  "recall": 0.8036480686695279,
+  "precision": 0.8464552098244557,
+  "fp_per_image": 3.718978102189781,
+  "ap50": 0.8496977799655735,
+  "by_agreement": {
+   "both models": {
+    "correct": 9748,
+    "false": 874,
+    "precision_wilson95": [
+     0.9177,
+     0.9123,
+     0.9228
+    ]
+   },
+   "one model": {
+    "correct": 1487,
+    "false": 1164,
+    "precision_wilson95": [
+     0.5609,
+     0.542,
+     0.5797
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,51 @@
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# Local configuration and credentials
+.env
+.env.*
+cookies*.txt
+review_credentials.txt
+*_credentials.txt
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.pem
+*.key
+
+# Runtime state and user-submitted mission data
+instance/
+
+# Downloaded datasets, generated training output, and model binaries
+datasets/
+runs/
+# Results of a repeated evaluation (README: --output-dir eval/rerun)
+/eval/rerun/
+# Decompressed copy of the tracked eval/results/per_image_metrics.jsonl.gz
+/eval/results/per_image_metrics.jsonl
+weights/
+*.pt
+*.onnx
+*.engine
+*.zip
+
+# Generated test media (reproducible with scripts/make_fixture.py)
+fixtures/
+fixtures_det/
+
+# Editor and OS metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

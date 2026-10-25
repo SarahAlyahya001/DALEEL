@@ -1,0 +1,205 @@
+{
+  "configuration": {
+    "dataset_manifest_sha256": "d6755dcbd5d0da44faf608c8efd2e20c2856b1df3637e0aa8cb0b0de480d6087",
+    "models": {
+      "n": {
+        "path": "weights/yolov8n.pt",
+        "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+      },
+      "s": {
+        "path": "weights/yolov8s.pt",
+        "sha256": "1f47a78bf100391c2a140b7ac73a1caae18c32779be7d310658112f7ac9aa78a"
+      }
+    },
+    "packages": {
+      "numpy": "1.26.4",
+      "opencv-python": "4.11.0.86",
+      "psutil": "7.2.2",
+      "torch": "2.3.1",
+      "torchvision": "0.18.1",
+      "ultralytics": "8.2.48"
+    },
+    "parameters": {
+      "agnostic_nms": false,
+      "ap_iou": [
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.95
+      ],
+      "augment": false,
+      "classes": [
+        0,
+        2
+      ],
+      "device": "cpu",
+      "disk_reserve_bytes": 1000000000,
+      "effective_batch": 1,
+      "gt_mapping": {
+        "1": "person",
+        "2": "person",
+        "4": "car"
+      },
+      "half": false,
+      "images": 548,
+      "imgsz": 1280,
+      "interruption_gate": "wall > 5 seconds and wall > 20*process_cpu_seconds aborts attempt",
+      "matching_iou": 0.5,
+      "max_det": 300,
+      "nms_base_time_limit_seconds": 2.0,
+      "nms_iou": 0.7,
+      "nms_max_nms": 30000,
+      "nms_max_time_img_seconds": 0.05,
+      "preflight_output_budget_bytes": 400000000,
+      "protocol": "daleel-visdrone-two-class-v2",
+      "ranking_conf": 0.001,
+      "ranking_degenerate_policy": "finite nonpositive clipped area preserved and counted FP, bypass ignore/matching",
+      "recall_points": 101,
+      "region_union_coverage": 0.5,
+      "score_zero_ignore": "same-class unmatched prediction IoA >= evaluation IoU",
+      "screen_conf": 0.3,
+      "single_image_letterbox": "auto rectangular stride padding for PyTorch",
+      "strict_confidence": true,
+      "support_iou": 0.5,
+      "timing_gate": "wall > max(60 seconds,20*median(completed valid warmup/pilot calls)) aborts attempt",
+      "timing_units": "seconds; Ultralytics speed fields explicitly milliseconds",
+      "verify_conf": 0.5,
+      "warmup_calls_per_model_per_mode": 5
+    },
+    "source_hashes": {
+      "daleel/pipeline/detector.py": "251ed458a8734e58d3b2a282abe7cf9340bd65345c418788a35e75f22c6b36a3",
+      "eval/detection_metrics.py": "8fb1b1a038f8eadd9dccb5b44bbb3aa7325027c0c163e40777f6c8af9259f82d",
+      "eval/detection_run.py": "5cc204697db5b22b5499a5616558ae5da2e9efb5326f1cf4bf7d5a1dacd271a1",
+      "eval/visdrone.py": "7a210899644ec5a5e21503400bda7784a160790338077abb2993f39851c60003"
+    }
+  },
+  "sessions": [
+    {
+      "attempt_id": "2026-09-16T174353.397978_0000-610ad571",
+      "configuration_digest": "8214c72b7390db5c30c7be58d013cbed1beaa3d764362f8786c078100a62fc56",
+      "cpu_brand": "Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz",
+      "elapsed_seconds": 2580.6439789999276,
+      "ended_utc": "2026-09-16T18:26:59.137099+00:00",
+      "environment": {
+        "ac_power": true,
+        "background_thermal_limitations": "Background workloads and temperature are uncontrolled; timing is laptop/session specific.",
+        "cpu": "Intel64 Family 6 Model 142 Stepping 11, GenuineIntel",
+        "logical_cpus": 8,
+        "offline_enforcement": "Python socket audit guard and subprocess guard during model loading/inference",
+        "opencv_threads": 8,
+        "os": "Windows-10-10.0.26200-SP0",
+        "physical_cpus": 4,
+        "power_plan": "Power Scheme GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (Balanced)",
+        "python": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
+        "ram_bytes": 8434171904
+      },
+      "final_rss_bytes": 271806464,
+      "last_call": {
+        "image_id": "0000364_01765_d_0000782",
+        "model": "s",
+        "pass": "operational",
+        "predict_seconds": 1.6984292000997812,
+        "process_cpu_seconds": 1.65625,
+        "stage": "full",
+        "warnings": []
+      },
+      "peak_working_set_bytes": 565968896,
+      "pilot": {
+        "cpu_latency": {
+          "count": 40,
+          "mean_seconds": 0.866796875,
+          "median_seconds": 0.9375,
+          "p95_seconds": 1.3312499999999998
+        },
+        "estimated_full_seconds": 1972.5152482280507,
+        "images": 10,
+        "passed": true,
+        "per_pass_model": {
+          "operational": {
+            "n": {
+              "cpu": {
+                "count": 10,
+                "mean_seconds": 0.5046875,
+                "median_seconds": 0.5,
+                "p95_seconds": 0.55546875
+              },
+              "wall": {
+                "count": 10,
+                "mean_seconds": 0.5111804099520668,
+                "median_seconds": 0.5012743499828503,
+                "p95_seconds": 0.562466134945862
+              }
+            },
+            "s": {
+              "cpu": {
+                "count": 10,
+                "mean_seconds": 1.2046875,
+                "median_seconds": 1.1796875,
+                "p95_seconds": 1.3070312499999999
+              },
+              "wall": {
+                "count": 10,
+                "mean_seconds": 1.2126153600635008,
+                "median_seconds": 1.185749850119464,
+                "p95_seconds": 1.314558514964301
+              }
+            }
+          },
+          "ranking": {
+            "n": {
+              "cpu": {
+                "count": 10,
+                "mean_seconds": 0.5296875,
+                "median_seconds": 0.515625,
+                "p95_seconds": 0.6359374999999998
+              },
+              "wall": {
+                "count": 10,
+                "mean_seconds": 0.5305565300164744,
+                "median_seconds": 0.5092183999950066,
+                "p95_seconds": 0.6423447099979964
+              }
+            },
+            "s": {
+              "cpu": {
+                "count": 10,
+                "mean_seconds": 1.228125,
+                "median_seconds": 1.1875,
+                "p95_seconds": 1.43359375
+              },
+              "wall": {
+                "count": 10,
+                "mean_seconds": 1.2377006800146773,
+                "median_seconds": 1.1939079000148922,
+                "p95_seconds": 1.427683609945234
+              }
+            }
+          }
+        },
+        "process_cpu_seconds": 35.546875,
+        "seconds": 35.99480379978195,
+        "technical_only": true,
+        "thresholds_unchanged": true,
+        "wall_latency": {
+          "count": 40,
+          "mean_seconds": 0.8730132450116799,
+          "median_seconds": 0.9554471499286592,
+          "p95_seconds": 1.3323112599900921
+        }
+      },
+      "resumed_images": 0,
+      "started_utc": "2026-09-16T17:43:53.397978+00:00",
+      "status": "complete",
+      "torch_interop_threads": 8,
+      "torch_threads": 1,
+      "warmup_calls": 20,
+      "warmup_seconds": 18.619906099978834
+    }
+  ]
+}

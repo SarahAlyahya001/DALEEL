@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Sign in · DALEEL{% endblock %}
+{% block flashes %}{% endblock %}
+{% block content %}
+<div class="login">
+  <div class="login__brand">
+    <div class="login__meta"><span>DALEEL / v1.0</span></div>
+    <div class="login__hero">
+      <div class="eyebrow login__eyebrow">Search and rescue</div>
+      <h1 class="login__title">DALEEL</h1>
+      <p class="login__subtitle">Supporting the search for missing people through careful review of aerial evidence.</p>
+    </div>
+    <div class="login__meta"></div>
+  </div>
+  <div class="login__form-wrap">
+    <form class="login__form" id="login-form" method="post">
+      <h2 id="login-heading">Sign in</h2>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="login__notice{{ ' login__notice--error' if category == 'error' else '' }}" role="{{ 'alert' if category == 'error' else 'status' }}" aria-atomic="true">
+          <span class="login__notice-icon{{ ' login__notice-icon--success' if category == 'success' else '' }}">{{ icon('close' if category == 'error' else 'check' if category == 'success' else 'info', 18) }}</span>
+          <p>{{ message }}</p>
+        </div>
+        {% endfor %}
+      {% endwith %}
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+      <div class="field">
+        <label class="field__label" for="username">Username</label>
+        <input class="field__input" id="username" name="username" placeholder="Username" maxlength="100" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label class="field__label" for="password">Password</label>
+        <div class="field__pw-wrap">
+          <input class="field__input" id="password" name="password" type="password" placeholder="Password" maxlength="256" autocomplete="current-password" required>
+          <button type="button" class="password-toggle" data-password-toggle="password" aria-controls="password" aria-label="Show password" aria-pressed="false" hidden>{{ icon('eye',16) }}</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn--primary btn--block login__submit">Sign in {{ icon('arrow') }}</button>
+      <p class="login__access">For account access or password help, contact your administrator.</p>
+    </form>
+  </div>
+</div>
+{% endblock %}

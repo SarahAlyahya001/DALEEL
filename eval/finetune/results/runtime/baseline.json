@@ -1,0 +1,19 @@
+{
+ "status": "Complete",
+ "submit_to_complete_seconds": 150.0,
+ "app_processing_seconds": 143.6,
+ "frames_per_model": {
+  "screened_frames": 120,
+  "verified_frames": 105
+ },
+ "observations": 96,
+ "peak_working_set_mb": 656.0,
+ "config": "baseline",
+ "hardware": {
+  "processor": "13th Gen Intel(R) Core(TM) i7-1355U",
+  "logical_cpus": 12,
+  "system": "Windows-10-10.0.26200-SP0",
+  "python": "3.10.11",
+  "ram_gb": 15.7
+ }
+}

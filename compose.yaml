@@ -1,0 +1,32 @@
+# DALEEL behind Caddy, which obtains and renews the HTTPS certificate for your domain.
+# Set the domain in a .env file next to this file: DALEEL_DOMAIN=daleel.example.org
+# See docs/DEPLOYMENT.md for the complete steps.
+services:
+  daleel:
+    build: .
+    restart: unless-stopped
+    environment:
+      DALEEL_TRUSTED_PROXIES: "1"
+      DALEEL_COOKIE_SECURE: "1"
+    volumes:
+      - daleel-data:/app/instance
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - daleel
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DALEEL_DOMAIN: ${DALEEL_DOMAIN:?Set DALEEL_DOMAIN in the .env file}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  daleel-data:
+  caddy-data:
+  caddy-config:

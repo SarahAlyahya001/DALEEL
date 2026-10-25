@@ -1,0 +1,33 @@
+﻿{
+ "A_at_own": 75,
+ "B_at_own": 75,
+ "union_at_own_thresholds": 78,
+ "only_A": 3,
+ "only_B": 3,
+ "both": 72,
+ "n_at_tC": 66,
+ "s_at_tC": 75,
+ "union_at_tC": 76,
+ "C_at_tC": 76,
+ "threshold_effect": {
+  "lost_by_raising_n_threshold": [
+   "train_RAK_0010:0",
+   "train_RAK_0028:0",
+   "train_RAK_0029:1",
+   "train_RAK_0057:0",
+   "train_RAK_0061:0",
+   "train_RAK_0064:0",
+   "train_RAK_0066:0",
+   "train_RAK_0069:0",
+   "train_RAK_0077:0"
+  ],
+  "gained_by_lowering_s_threshold": [],
+  "in_union_own_not_union_tC": [
+   "train_RAK_0061:0",
+   "train_RAK_0069:0"
+  ],
+  "in_union_tC_not_union_own": []
+ },
+ "fusion_effect": [],
+ "in_C_not_in_union_tC": []
+}

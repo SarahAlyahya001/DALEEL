@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Delete Mission {{ mission.mission_id }} · DALEEL{% endblock %}
+{% block content %}
+<section class="delete-confirmation" aria-labelledby="delete-heading">
+  <span class="delete-confirmation__icon" aria-hidden="true">{{ icon('trash',24) }}</span>
+  <h1 id="delete-heading">Delete mission?</h1>
+  <p>Mission {{ mission.mission_id }} and its observations will be removed from your history.</p>
+  <p class="delete-confirmation__filename">{{ original_video_name(mission) }}</p>
+  <form method="post" action="{{ url_for('main.delete_mission', mission_id=mission.mission_id) }}" class="actions">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <a class="btn btn--secondary" href="{{ url_for('main.history') }}">Cancel</a>
+    <button class="btn btn--danger" type="submit" name="confirm" value="delete">{{ icon('trash') }} Delete mission</button>
+  </form>
+</section>
+{% endblock %}

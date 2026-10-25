@@ -1,0 +1,30 @@
+{
+ "images": 93,
+ "candidates_app": 144,
+ "candidate_mismatches": [],
+ "mismatch_count": 0,
+ "app": {
+  "tp": 76,
+  "person_fp": 58,
+  "car_fp": 0,
+  "gt": 86,
+  "recall": 0.8837209302325582,
+  "precision": 0.5671641791044776,
+  "fp_per_image": 0.6236559139784946
+ },
+ "evaluation_C": {
+  "tp": 76,
+  "person_fp": 58,
+  "car_fp": 0,
+  "gt": 86,
+  "recall": 0.8837209302325582,
+  "precision": 0.5671641791044776,
+  "fp_per_image": 0.6236559139784946
+ },
+ "agreement_counts_app": {
+  "both models": 86,
+  "YOLOv8n only": 20,
+  "YOLOv8s only": 38
+ },
+ "identical_scores": true
+}

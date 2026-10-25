@@ -1,0 +1,300 @@
+{
+ "images": 93,
+ "persons": 86,
+ "A": {
+  "operating_threshold": 0.27,
+  "at_operating": {
+   "tp": 75,
+   "person_fp": 60,
+   "car_fp": 0,
+   "gt": 86,
+   "recall": 0.872093023255814,
+   "precision": 0.5555555555555556,
+   "fp_per_image": 0.6451612903225806
+  },
+  "passes": {
+   "recall": true,
+   "precision": true,
+   "fp_per_image": true
+  },
+  "person_ap50": 0.7282693625559818,
+  "matched_fp": {
+   "0.25": {
+    "threshold": 0.48,
+    "tp": 60,
+    "person_fp": 23,
+    "car_fp": 0,
+    "gt": 86,
+    "recall": 0.6976744186046512,
+    "precision": 0.7228915662650602,
+    "fp_per_image": 0.24731182795698925
+   },
+   "0.5": {
+    "threshold": 0.36,
+    "tp": 73,
+    "person_fp": 45,
+    "car_fp": 0,
+    "gt": 86,
+    "recall": 0.8488372093023255,
+    "precision": 0.6186440677966102,
+    "fp_per_image": 0.4838709677419355
+   },
+   "1.0": {
+    "threshold": 0.18,
+    "tp": 77,
+    "person_fp": 92,
+    "car_fp": 0,
+    "gt": 86,
+    "recall": 0.8953488372093024,
+    "precision": 0.4556213017751479,
+    "fp_per_image": 0.989247311827957
+   }
+  },
+  "car_check": true
+ },
+ "B": {
+  "operating_threshold": 0.46,
+  "at_operating": {
+   "tp": 75,
+   "person_fp": 37,
+   "car_fp": 0,
+   "gt": 86,
+   "recall": 0.872093023255814,
+   "precision": 0.6696428571428571,
+   "fp_per_image": 0.3978494623655914
+  },
+  "passes": {
+   "recall": true,
+   "precision": true,
+   "fp_per_image": true
+  },
+  "person_ap50": 0.8136423511855297,
+  "matched_fp": {
+   "0.25": {
+    "threshold": 0.54,
+    "tp": 70,
+    "person_fp": 23,
+    "car_fp": 0,
+    "gt": 86,
+    "recall": 0.813953488372093,
+    "precision": 0.7526881720430108,
+    "fp_per_image": 0.24731182795698925
+   },
+   "0.5": {
+    "threshold": 0.38,
+    "tp": 75,
+    "person_fp": 46,
+    "car_fp": 0,
+    "gt": 86,
+    "recall": 0.872093023255814,
+    "precision": 0.6198347107438017,
+    "fp_per_image": 0.4946236559139785
+   },
+   "1.0": {
+    "threshold": 0.19,
+    "tp": 76,
+    "person_fp": 93,
+    "car_fp": 0,
+    "gt": 86,
+    "recall": 0.8837209302325582,
+    "precision": 0.44970414201183434,
+    "fp_per_image": 1.0
+   }
+  },
+  "car_check": true
+ },
+ "C": {
+  "operating_threshold": 0.42,
+  "at_operating": {
+   "tp": 76,
+   "person_fp": 58,
+   "car_fp": 0,
+   "gt": 86,
+   "recall": 0.8837209302325582,
+   "precision": 0.5671641791044776,
+   "fp_per_image": 0.6236559139784946
+  },
+  "passes": {
+   "recall": true,
+   "precision": true,
+   "fp_per_image": true
+  },
+  "person_ap50": 0.7987457358674545,
+  "matched_fp": {
+   "0.25": {
+    "threshold": 0.59,
+    "tp": 67,
+    "person_fp": 22,
+    "car_fp": 0,
+    "gt": 86,
+    "recall": 0.7790697674418605,
+    "precision": 0.7528089887640449,
+    "fp_per_image": 0.23655913978494625
+   },
+   "0.5": {
+    "threshold": 0.48,
+    "tp": 72,
+    "person_fp": 45,
+    "car_fp": 0,
+    "gt": 86,
+    "recall": 0.8372093023255814,
+    "precision": 0.6153846153846154,
+    "fp_per_image": 0.4838709677419355
+   },
+   "1.0": {
+    "threshold": 0.32,
+    "tp": 77,
+    "person_fp": 91,
+    "car_fp": 0,
+    "gt": 86,
+    "recall": 0.8953488372093024,
+    "precision": 0.4583333333333333,
+    "fp_per_image": 0.978494623655914
+   }
+  },
+  "car_check": true
+ },
+ "unique_correct": {
+  "YOLOv8n only": 3,
+  "YOLOv8s only": 3,
+  "both": 72
+ },
+ "C_true_positives_by_source": {
+  "both models": 65,
+  "YOLOv8n only": 1,
+  "YOLOv8s only": 10
+ },
+ "agreement": {
+  "both models": {
+   "detections": 77,
+   "precision_wilson95": [
+    0.8442,
+    0.7471,
+    0.9085
+   ],
+   "band_0.42_0.50": {
+    "detections": 1,
+    "precision_wilson95": [
+     1.0,
+     0.2065,
+     1.0
+    ]
+   },
+   "band_0.50_0.75": {
+    "detections": 21,
+    "precision_wilson95": [
+     0.8095,
+     0.6,
+     0.9233
+    ]
+   },
+   "band_0.75_1.00": {
+    "detections": 55,
+    "precision_wilson95": [
+     0.8545,
+     0.7384,
+     0.9244
+    ]
+   }
+  },
+  "single model": {
+   "detections": 57,
+   "precision_wilson95": [
+    0.193,
+    0.1113,
+    0.3134
+   ],
+   "band_0.42_0.50": {
+    "detections": 25,
+    "precision_wilson95": [
+     0.12,
+     0.0417,
+     0.2996
+    ]
+   },
+   "band_0.50_0.75": {
+    "detections": 32,
+    "precision_wilson95": [
+     0.25,
+     0.1325,
+     0.4211
+    ]
+   },
+   "band_0.75_1.00": {
+    "detections": 0,
+    "precision_wilson95": null
+   }
+  },
+  "agreement_is_useful_evidence": true
+ },
+ "primary": {
+  "better_single": "B",
+  "compared": "C - B",
+  "recall_C": 0.8372093023255814,
+  "recall_B": 0.872093023255814,
+  "difference": -0.03488372093023251,
+  "bootstrap95": [
+   -0.08141928864569076,
+   0.0
+  ],
+  "resamples_used": 2000,
+  "interval_above_zero": false
+ },
+ "B_vs_A": {
+  "compared": "B - A",
+  "recall_B": 0.872093023255814,
+  "recall_A": 0.8488372093023255,
+  "difference": 0.023255813953488413,
+  "bootstrap95": [
+   -0.03334269662921358,
+   0.08109487038058465
+  ],
+  "resamples_used": 2000,
+  "interval_above_zero": false
+ },
+ "visdrone_heldout": {
+  "car_ap50_pretrained_n": 0.4818896425155105,
+  "A": {
+   "person_ap50": 0.562849458652562,
+   "car_ap50": 0.7657776094672979,
+   "car_check": true,
+   "at_heridal_operating_threshold": {
+    "tp": 2671,
+    "person_fp": 1000,
+    "car_fp": 1310,
+    "gt": 5234,
+    "recall": 0.5103171570500573,
+    "precision": 0.7275946608553527,
+    "fp_per_image": 11.907216494845361
+   }
+  },
+  "B": {
+   "person_ap50": 0.6289855977838408,
+   "car_ap50": 0.8059168591574473,
+   "car_check": true,
+   "at_heridal_operating_threshold": {
+    "tp": 2472,
+    "person_fp": 359,
+    "car_fp": 513,
+    "gt": 5234,
+    "recall": 0.4722965227359572,
+    "precision": 0.8731896856234546,
+    "fp_per_image": 4.494845360824742
+   }
+  },
+  "C": {
+   "person_ap50": 0.6133987975318572,
+   "car_ap50": 0.7975263232405784,
+   "car_check": true,
+   "at_heridal_operating_threshold": {
+    "tp": 2695,
+    "person_fp": 582,
+    "car_fp": 795,
+    "gt": 5234,
+    "recall": 0.5149025601834162,
+    "precision": 0.8223985352456515,
+    "fp_per_image": 7.097938144329897
+   }
+  }
+ }
+}

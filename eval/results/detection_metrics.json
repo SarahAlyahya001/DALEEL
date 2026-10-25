@@ -1,0 +1,845 @@
+{
+  "cap_hits": {
+    "operational": {
+      "n": 0,
+      "s": 0
+    },
+    "ranking": {
+      "n": 419,
+      "s": 345
+    }
+  },
+  "configuration": {
+    "dataset_manifest_sha256": "d6755dcbd5d0da44faf608c8efd2e20c2856b1df3637e0aa8cb0b0de480d6087",
+    "models": {
+      "n": {
+        "path": "weights/yolov8n.pt",
+        "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+      },
+      "s": {
+        "path": "weights/yolov8s.pt",
+        "sha256": "1f47a78bf100391c2a140b7ac73a1caae18c32779be7d310658112f7ac9aa78a"
+      }
+    },
+    "packages": {
+      "numpy": "1.26.4",
+      "opencv-python": "4.11.0.86",
+      "psutil": "7.2.2",
+      "torch": "2.3.1",
+      "torchvision": "0.18.1",
+      "ultralytics": "8.2.48"
+    },
+    "parameters": {
+      "agnostic_nms": false,
+      "ap_iou": [
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.95
+      ],
+      "augment": false,
+      "classes": [
+        0,
+        2
+      ],
+      "device": "cpu",
+      "disk_reserve_bytes": 1000000000,
+      "effective_batch": 1,
+      "gt_mapping": {
+        "1": "person",
+        "2": "person",
+        "4": "car"
+      },
+      "half": false,
+      "images": 548,
+      "imgsz": 1280,
+      "interruption_gate": "wall > 5 seconds and wall > 20*process_cpu_seconds aborts attempt",
+      "matching_iou": 0.5,
+      "max_det": 300,
+      "nms_base_time_limit_seconds": 2.0,
+      "nms_iou": 0.7,
+      "nms_max_nms": 30000,
+      "nms_max_time_img_seconds": 0.05,
+      "preflight_output_budget_bytes": 400000000,
+      "protocol": "daleel-visdrone-two-class-v2",
+      "ranking_conf": 0.001,
+      "ranking_degenerate_policy": "finite nonpositive clipped area preserved and counted FP, bypass ignore/matching",
+      "recall_points": 101,
+      "region_union_coverage": 0.5,
+      "score_zero_ignore": "same-class unmatched prediction IoA >= evaluation IoU",
+      "screen_conf": 0.3,
+      "single_image_letterbox": "auto rectangular stride padding for PyTorch",
+      "strict_confidence": true,
+      "support_iou": 0.5,
+      "timing_gate": "wall > max(60 seconds,20*median(completed valid warmup/pilot calls)) aborts attempt",
+      "timing_units": "seconds; Ultralytics speed fields explicitly milliseconds",
+      "verify_conf": 0.5,
+      "warmup_calls_per_model_per_mode": 5
+    },
+    "source_hashes": {
+      "daleel/pipeline/detector.py": "251ed458a8734e58d3b2a282abe7cf9340bd65345c418788a35e75f22c6b36a3",
+      "eval/detection_metrics.py": "8fb1b1a038f8eadd9dccb5b44bbb3aa7325027c0c163e40777f6c8af9259f82d",
+      "eval/detection_run.py": "5cc204697db5b22b5499a5616558ae5da2e9efb5326f1cf4bf7d5a1dacd271a1",
+      "eval/visdrone.py": "7a210899644ec5a5e21503400bda7784a160790338077abb2993f39851c60003"
+    }
+  },
+  "degenerate_by_image": [
+    {
+      "box": [
+        598.5938720703125,
+        765.0,
+        734.5191650390625,
+        765.0
+      ],
+      "class": "car",
+      "image_id": "0000026_04500_d_0000033",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 45,
+      "score": 0.0020480139646679163
+    },
+    {
+      "box": [
+        1240.1131591796875,
+        765.0,
+        1360.0,
+        765.0
+      ],
+      "class": "person",
+      "image_id": "0000069_02480_d_0000007",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 268,
+      "score": 0.0019038444152101874
+    },
+    {
+      "box": [
+        561.6154174804688,
+        540.0,
+        628.5584716796875,
+        540.0
+      ],
+      "class": "person",
+      "image_id": "0000086_00000_d_0000001",
+      "model": "n",
+      "pass": "ranking",
+      "prediction_id": 275,
+      "score": 0.0016406476497650146
+    },
+    {
+      "box": [
+        914.0313720703125,
+        540.0,
+        960.0,
+        540.0
+      ],
+      "class": "car",
+      "image_id": "0000163_00001_d_0000001",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 118,
+      "score": 0.003306665690615773
+    },
+    {
+      "box": [
+        557.2835083007812,
+        1080.0,
+        750.4070434570312,
+        1080.0
+      ],
+      "class": "car",
+      "image_id": "0000165_04325_d_0000105",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 7,
+      "score": 0.0017335410229861736
+    },
+    {
+      "box": [
+        0.0,
+        540.0,
+        114.52015686035156,
+        540.0
+      ],
+      "class": "car",
+      "image_id": "0000194_00998_d_0000124",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 3,
+      "score": 0.0031494894064962864
+    },
+    {
+      "box": [
+        907.4957275390625,
+        765.0,
+        1030.39453125,
+        765.0
+      ],
+      "class": "person",
+      "image_id": "0000216_00520_d_0000001",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 214,
+      "score": 0.0016749086789786816
+    },
+    {
+      "box": [
+        488.0595703125,
+        540.0,
+        579.615966796875,
+        540.0
+      ],
+      "class": "car",
+      "image_id": "0000244_03000_d_0000007",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 129,
+      "score": 0.001373103354126215
+    },
+    {
+      "box": [
+        593.1813354492188,
+        765.0,
+        747.0679931640625,
+        765.0
+      ],
+      "class": "car",
+      "image_id": "0000276_04401_d_0000529",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 27,
+      "score": 0.001259018899872899
+    },
+    {
+      "box": [
+        788.6765747070312,
+        765.0,
+        929.1286010742188,
+        765.0
+      ],
+      "class": "car",
+      "image_id": "0000276_04401_d_0000529",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 97,
+      "score": 0.0015501671005040407
+    },
+    {
+      "box": [
+        1219.5772705078125,
+        765.0,
+        1326.28271484375,
+        765.0
+      ],
+      "class": "car",
+      "image_id": "0000280_02201_d_0000623",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 226,
+      "score": 0.002241093199700117
+    },
+    {
+      "box": [
+        38.255516052246094,
+        765.0,
+        169.8181610107422,
+        765.0
+      ],
+      "class": "car",
+      "image_id": "0000287_00601_d_0000762",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 3,
+      "score": 0.0025794855318963528
+    },
+    {
+      "box": [
+        0.0,
+        765.0,
+        116.16111755371094,
+        765.0
+      ],
+      "class": "car",
+      "image_id": "0000335_00197_d_0000044",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 1,
+      "score": 0.0013717727269977331
+    },
+    {
+      "box": [
+        920.35498046875,
+        765.0,
+        1100.076171875,
+        765.0
+      ],
+      "class": "car",
+      "image_id": "0000335_01765_d_0000052",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 142,
+      "score": 0.0021183304488658905
+    },
+    {
+      "box": [
+        656.0285034179688,
+        765.0,
+        810.7881469726562,
+        765.0
+      ],
+      "class": "car",
+      "image_id": "0000335_02549_d_0000056",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 103,
+      "score": 0.001707416377030313
+    },
+    {
+      "box": [
+        1248.9090576171875,
+        765.0,
+        1360.0,
+        765.0
+      ],
+      "class": "car",
+      "image_id": "0000335_05097_d_0000069",
+      "model": "s",
+      "pass": "ranking",
+      "prediction_id": 72,
+      "score": 0.001155357575044036
+    }
+  ],
+  "degenerate_predictions": {
+    "operational": {
+      "n": {
+        "car": 0,
+        "person": 0
+      },
+      "s": {
+        "car": 0,
+        "person": 0
+      }
+    },
+    "ranking": {
+      "n": {
+        "car": 0,
+        "person": 1
+      },
+      "s": {
+        "car": 13,
+        "person": 2
+      }
+    }
+  },
+  "ignore_audit": {
+    "region_excluded_gt": 131,
+    "score_zero_target_gt": 0
+  },
+  "images": 548,
+  "invocations": {
+    "conditional_rate": 0.9708029197080292,
+    "deployed_conditional_s": 532,
+    "estimated_avoided": 16,
+    "estimated_avoided_fraction": 0.029197080291970802,
+    "note": "Both models physically ran on every image for comparison; deployed savings are counterfactual.",
+    "per_mode_n": 548,
+    "per_mode_s_standalone": 548,
+    "total_measured_n": 1096,
+    "total_measured_s": 1096
+  },
+  "operational": {
+    "A": {
+      "combined": {
+        "f1": 0.46009509688634387,
+        "fn": 18903,
+        "fp": 2217,
+        "ground_truth": 27902,
+        "precision": 0.8023359486447932,
+        "prediction_count": 11216,
+        "recall": 0.3225216830334743,
+        "tp": 8999
+      },
+      "macro": {
+        "f1": 0.44334996377233366,
+        "precision": 0.8128242880094015,
+        "recall": 0.32224809530474197
+      },
+      "per_class": {
+        "car": {
+          "f1": 0.5761634506242905,
+          "fn": 7635,
+          "fp": 1700,
+          "ground_truth": 13980,
+          "ignored_predictions": 63,
+          "precision": 0.7886886264760721,
+          "prediction_count": 8045,
+          "raw_predictions": 8108,
+          "recall": 0.453862660944206,
+          "tp": 6345
+        },
+        "person": {
+          "f1": 0.3105364769203768,
+          "fn": 11268,
+          "fp": 517,
+          "ground_truth": 13922,
+          "ignored_predictions": 16,
+          "precision": 0.836959949542731,
+          "prediction_count": 3171,
+          "raw_predictions": 3187,
+          "recall": 0.19063352966527797,
+          "tp": 2654
+        }
+      }
+    },
+    "B": {
+      "combined": {
+        "f1": 0.42709715864460035,
+        "fn": 20018,
+        "fp": 1133,
+        "ground_truth": 27902,
+        "precision": 0.8743484529222579,
+        "prediction_count": 9017,
+        "recall": 0.2825603899362053,
+        "tp": 7884
+      },
+      "macro": {
+        "f1": 0.4020018760809861,
+        "precision": 0.9001337120112773,
+        "recall": 0.2822412587276054
+      },
+      "per_class": {
+        "car": {
+          "f1": 0.5774407582938389,
+          "fn": 7888,
+          "fp": 1028,
+          "ground_truth": 13980,
+          "ignored_predictions": 31,
+          "precision": 0.8556179775280899,
+          "prediction_count": 7120,
+          "raw_predictions": 7151,
+          "recall": 0.4357653791130186,
+          "tp": 6092
+        },
+        "person": {
+          "f1": 0.22656299386813325,
+          "fn": 12130,
+          "fp": 105,
+          "ground_truth": 13922,
+          "ignored_predictions": 5,
+          "precision": 0.9446494464944649,
+          "prediction_count": 1897,
+          "raw_predictions": 1902,
+          "recall": 0.1287171383421922,
+          "tp": 1792
+        }
+      }
+    },
+    "E": {
+      "combined": {
+        "f1": 0.46009509688634387,
+        "fn": 18903,
+        "fp": 2217,
+        "ground_truth": 27902,
+        "precision": 0.8023359486447932,
+        "prediction_count": 11216,
+        "recall": 0.3225216830334743,
+        "tp": 8999
+      },
+      "macro": {
+        "f1": 0.44334996377233366,
+        "precision": 0.8128242880094015,
+        "recall": 0.32224809530474197
+      },
+      "per_class": {
+        "car": {
+          "f1": 0.5761634506242905,
+          "fn": 7635,
+          "fp": 1700,
+          "ground_truth": 13980,
+          "ignored_predictions": 63,
+          "precision": 0.7886886264760721,
+          "prediction_count": 8045,
+          "raw_predictions": 8108,
+          "recall": 0.453862660944206,
+          "tp": 6345
+        },
+        "person": {
+          "f1": 0.3105364769203768,
+          "fn": 11268,
+          "fp": 517,
+          "ground_truth": 13922,
+          "ignored_predictions": 16,
+          "precision": 0.836959949542731,
+          "prediction_count": 3171,
+          "raw_predictions": 3187,
+          "recall": 0.19063352966527797,
+          "tp": 2654
+        }
+      }
+    },
+    "fixed_support_partition": {
+      "car": {
+        "Dual-Model": {
+          "fp": 794,
+          "ignored_predictions": 20,
+          "precision": 0.8711457319052256,
+          "prediction_count": 6162,
+          "proportion_of_A_fp": 0.46705882352941175,
+          "proportion_of_A_tp": 0.8460204885736801,
+          "raw_predictions": 6182,
+          "tp": 5368
+        },
+        "Screening-Only": {
+          "fp": 906,
+          "ignored_predictions": 43,
+          "precision": 0.5188528943175783,
+          "prediction_count": 1883,
+          "proportion_of_A_fp": 0.5329411764705883,
+          "proportion_of_A_tp": 0.15397951142631994,
+          "raw_predictions": 1926,
+          "tp": 977
+        },
+        "precision_difference": 0.3522928375876473
+      },
+      "combined": {
+        "Dual-Model": {
+          "fp": 884,
+          "ignored_predictions": 24,
+          "precision": 0.8874458874458875,
+          "prediction_count": 7854,
+          "proportion_of_A_fp": 0.39873703202525934,
+          "proportion_of_A_tp": 0.7745305033892654,
+          "raw_predictions": 7878,
+          "tp": 6970
+        },
+        "Screening-Only": {
+          "fp": 1333,
+          "ignored_predictions": 55,
+          "precision": 0.6035098155859607,
+          "prediction_count": 3362,
+          "proportion_of_A_fp": 0.6012629679747407,
+          "proportion_of_A_tp": 0.22546949661073454,
+          "raw_predictions": 3417,
+          "tp": 2029
+        },
+        "precision_difference": 0.28393607185992675
+      },
+      "person": {
+        "Dual-Model": {
+          "fp": 90,
+          "ignored_predictions": 4,
+          "precision": 0.9468085106382979,
+          "prediction_count": 1692,
+          "proportion_of_A_fp": 0.17408123791102514,
+          "proportion_of_A_tp": 0.6036171816126601,
+          "raw_predictions": 1696,
+          "tp": 1602
+        },
+        "Screening-Only": {
+          "fp": 427,
+          "ignored_predictions": 12,
+          "precision": 0.711291413116971,
+          "prediction_count": 1479,
+          "proportion_of_A_fp": 0.8259187620889749,
+          "proportion_of_A_tp": 0.39638281838733985,
+          "raw_predictions": 1491,
+          "tp": 1052
+        },
+        "precision_difference": 0.23551709752132688
+      }
+    }
+  },
+  "process_cpu_timing": {
+    "operational": {
+      "n": {
+        "count": 548,
+        "mean_seconds": 0.6613252737226277,
+        "median_seconds": 0.609375,
+        "p95_seconds": 1.078125
+      },
+      "s": {
+        "count": 548,
+        "mean_seconds": 1.551237454379562,
+        "median_seconds": 1.40625,
+        "p95_seconds": 2.515625
+      }
+    },
+    "ranking": {
+      "n": {
+        "count": 548,
+        "mean_seconds": 0.6686245437956204,
+        "median_seconds": 0.609375,
+        "p95_seconds": 1.1195312499999996
+      },
+      "s": {
+        "count": 548,
+        "mean_seconds": 1.5796361770072993,
+        "median_seconds": 1.421875,
+        "p95_seconds": 2.609375
+      }
+    }
+  },
+  "ranking": {
+    "A": {
+      "combined": {
+        "f1": 0.2134400095530943,
+        "fn": 10028,
+        "fp": 121709,
+        "ground_truth": 27902,
+        "precision": 0.12805284311126713,
+        "prediction_count": 139583,
+        "recall": 0.6405992401978353,
+        "tp": 17874
+      },
+      "macro": {
+        "ap50": 0.45184402995011597,
+        "f1": 0.21288867834394104,
+        "map50_95": 0.25512863785704726,
+        "precision": 0.12826350509869355,
+        "recall": 0.6403913208250587
+      },
+      "per_class": {
+        "car": {
+          "ap50": 0.552693332053522,
+          "ap_by_iou": {
+            "0.5": 0.552693332053522,
+            "0.55": 0.5326819574781939,
+            "0.6": 0.5059356453419066,
+            "0.65": 0.47650351709416183,
+            "0.7": 0.4353991961928577,
+            "0.75": 0.3849349901572229,
+            "0.8": 0.3181198848777592,
+            "0.85": 0.22910182695612324,
+            "0.9": 0.11742646927255489,
+            "0.95": 0.023153190147900283
+          },
+          "f1": 0.2168225473664366,
+          "fn": 3629,
+          "fp": 71148,
+          "ground_truth": 13980,
+          "ignored_predictions": 4601,
+          "map50_95": 0.3575950009572203,
+          "precision": 0.12700769334593062,
+          "prediction_count": 81499,
+          "raw_predictions": 86100,
+          "recall": 0.740414878397711,
+          "tp": 10351
+        },
+        "person": {
+          "ap50": 0.35099472784670993,
+          "ap_by_iou": {
+            "0.5": 0.35099472784670993,
+            "0.55": 0.3140144784176309,
+            "0.6": 0.26904232048998583,
+            "0.65": 0.21742320338886847,
+            "0.7": 0.16124809050834527,
+            "0.75": 0.10902445544355882,
+            "0.8": 0.06035764948812978,
+            "0.85": 0.026779033914355172,
+            "0.9": 0.01278829302165299,
+            "0.95": 0.0049504950495049506
+          },
+          "f1": 0.20895480932144544,
+          "fn": 6399,
+          "fp": 50561,
+          "ground_truth": 13922,
+          "ignored_predictions": 2669,
+          "map50_95": 0.1526622747568742,
+          "precision": 0.1295193168514565,
+          "prediction_count": 58084,
+          "raw_predictions": 60753,
+          "recall": 0.5403677632524062,
+          "tp": 7523
+        }
+      }
+    },
+    "B": {
+      "combined": {
+        "f1": 0.24966094175803283,
+        "fn": 8205,
+        "fp": 110191,
+        "ground_truth": 27902,
+        "precision": 0.1516460335057896,
+        "prediction_count": 129888,
+        "recall": 0.7059350584187514,
+        "tp": 19697
+      },
+      "macro": {
+        "ap50": 0.5306302968891514,
+        "f1": 0.2488706082777842,
+        "map50_95": 0.31074122814822924,
+        "precision": 0.15118499232343247,
+        "recall": 0.705773239172919
+      },
+      "per_class": {
+        "car": {
+          "ap50": 0.6215207686520995,
+          "ap_by_iou": {
+            "0.5": 0.6215207686520995,
+            "0.55": 0.6015635078614967,
+            "0.6": 0.5803434998800195,
+            "0.65": 0.5511473342606625,
+            "0.7": 0.5119534232130127,
+            "0.75": 0.4602699001874276,
+            "0.8": 0.38907522420506524,
+            "0.85": 0.2979685401683152,
+            "0.9": 0.16820638604289587,
+            "0.95": 0.03231446831893048
+          },
+          "f1": 0.2629904814490283,
+          "fn": 3025,
+          "fp": 58376,
+          "ground_truth": 13980,
+          "ignored_predictions": 4749,
+          "map50_95": 0.42143630527899256,
+          "precision": 0.15801012534075665,
+          "prediction_count": 69331,
+          "raw_predictions": 74080,
+          "recall": 0.7836194563662375,
+          "tp": 10955
+        },
+        "person": {
+          "ap50": 0.43973982512620347,
+          "ap_by_iou": {
+            "0.5": 0.43973982512620347,
+            "0.55": 0.3996410786254499,
+            "0.6": 0.3495780605283191,
+            "0.65": 0.2875760321796346,
+            "0.7": 0.22181883655597373,
+            "0.75": 0.1523806754856724,
+            "0.8": 0.08833434332989319,
+            "0.85": 0.04149820378307481,
+            "0.9": 0.015934058520834952,
+            "0.95": 0.0039603960396039604
+          },
+          "f1": 0.2347507351065401,
+          "fn": 5180,
+          "fp": 51815,
+          "ground_truth": 13922,
+          "ignored_predictions": 3651,
+          "map50_95": 0.20004615101746598,
+          "precision": 0.14435985930610828,
+          "prediction_count": 60557,
+          "raw_predictions": 64208,
+          "recall": 0.6279270219796006,
+          "tp": 8742
+        }
+      }
+    },
+    "E": {
+      "combined": {
+        "f1": 0.2134400095530943,
+        "fn": 10028,
+        "fp": 121709,
+        "ground_truth": 27902,
+        "precision": 0.12805284311126713,
+        "prediction_count": 139583,
+        "recall": 0.6405992401978353,
+        "tp": 17874
+      },
+      "macro": {
+        "ap50": 0.45184402995011597,
+        "f1": 0.21288867834394104,
+        "map50_95": 0.25512863785704726,
+        "precision": 0.12826350509869355,
+        "recall": 0.6403913208250587
+      },
+      "per_class": {
+        "car": {
+          "ap50": 0.552693332053522,
+          "ap_by_iou": {
+            "0.5": 0.552693332053522,
+            "0.55": 0.5326819574781939,
+            "0.6": 0.5059356453419066,
+            "0.65": 0.47650351709416183,
+            "0.7": 0.4353991961928577,
+            "0.75": 0.3849349901572229,
+            "0.8": 0.3181198848777592,
+            "0.85": 0.22910182695612324,
+            "0.9": 0.11742646927255489,
+            "0.95": 0.023153190147900283
+          },
+          "f1": 0.2168225473664366,
+          "fn": 3629,
+          "fp": 71148,
+          "ground_truth": 13980,
+          "ignored_predictions": 4601,
+          "map50_95": 0.3575950009572203,
+          "precision": 0.12700769334593062,
+          "prediction_count": 81499,
+          "raw_predictions": 86100,
+          "recall": 0.740414878397711,
+          "tp": 10351
+        },
+        "person": {
+          "ap50": 0.35099472784670993,
+          "ap_by_iou": {
+            "0.5": 0.35099472784670993,
+            "0.55": 0.3140144784176309,
+            "0.6": 0.26904232048998583,
+            "0.65": 0.21742320338886847,
+            "0.7": 0.16124809050834527,
+            "0.75": 0.10902445544355882,
+            "0.8": 0.06035764948812978,
+            "0.85": 0.026779033914355172,
+            "0.9": 0.01278829302165299,
+            "0.95": 0.0049504950495049506
+          },
+          "f1": 0.20895480932144544,
+          "fn": 6399,
+          "fp": 50561,
+          "ground_truth": 13922,
+          "ignored_predictions": 2669,
+          "map50_95": 0.1526622747568742,
+          "precision": 0.1295193168514565,
+          "prediction_count": 58084,
+          "raw_predictions": 60753,
+          "recall": 0.5403677632524062,
+          "tp": 7523
+        }
+      }
+    }
+  },
+  "timing": {
+    "derived_deployed_predict_sum": {
+      "count": 548,
+      "mean_seconds": 2.2024068355846667,
+      "median_seconds": 2.0229175500571728,
+      "p95_seconds": 3.5854059800738467
+    },
+    "operational": {
+      "n": {
+        "count": 548,
+        "mean_seconds": 0.6726741616798558,
+        "median_seconds": 0.6065710501279682,
+        "p95_seconds": 1.117342015018221
+      },
+      "s": {
+        "count": 548,
+        "mean_seconds": 1.578748911131007,
+        "median_seconds": 1.4178506000898778,
+        "p95_seconds": 2.5824896950856777
+      }
+    },
+    "ranking": {
+      "n": {
+        "count": 548,
+        "mean_seconds": 0.682130941785498,
+        "median_seconds": 0.6098838000325486,
+        "p95_seconds": 1.1717283898848108
+      },
+      "s": {
+        "count": 548,
+        "mean_seconds": 1.6156334421575327,
+        "median_seconds": 1.4319750000722706,
+        "p95_seconds": 2.744809475052169
+      }
+    }
+  }
+}

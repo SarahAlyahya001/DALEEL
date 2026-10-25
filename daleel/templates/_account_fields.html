@@ -1,0 +1,24 @@
+{% from "_icons.html" import icon %}
+{% macro identity_fields(prefix, account=none) %}
+<div class="field">
+  <label class="field__label" for="{{ prefix }}-full-name">Full name</label>
+  <input class="field__input" id="{{ prefix }}-full-name" name="full_name" value="{{ request.form.get('full_name', account.display_name if account else '') }}" maxlength="150" autocomplete="name" required>
+</div>
+<div class="field">
+  <label class="field__label" for="{{ prefix }}-email">Email address</label>
+  <input class="field__input" id="{{ prefix }}-email" name="email" type="email" value="{{ request.form.get('email', account.email or '' if account else '') }}" maxlength="254" autocomplete="email" aria-describedby="{{ prefix }}-email-hint" required>
+  <p class="field__hint" id="{{ prefix }}-email-hint">Contact information only. DALEEL sends no email; no activation is needed.</p>
+</div>
+<div class="field">
+  <label class="field__label" for="{{ prefix }}-username">Username</label>
+  <input class="field__input" id="{{ prefix }}-username" name="username" value="{{ request.form.get('username', account.username if account else '') }}" maxlength="100" autocomplete="off" required>
+</div>
+<div class="field">
+  <label class="field__label" for="{{ prefix }}-role">Role</label>
+  <select class="field__input" id="{{ prefix }}-role" name="role" required>
+    {% set role = request.form.get('role', account.role if account else 'analyst') %}
+    <option value="analyst" {% if role == 'analyst' %}selected{% endif %}>Analyst</option>
+    <option value="administrator" {% if role == 'administrator' %}selected{% endif %}>Administrator</option>
+  </select>
+</div>
+{% endmacro %}

@@ -1,0 +1,172 @@
+{
+ "steps": [
+  {
+   "step": "first start archives the earlier installation and prints one-time credentials",
+   "pass": true,
+   "detail": 1
+  },
+  {
+   "step": "originals of the earlier installation unchanged",
+   "pass": true,
+   "detail": "39 files"
+  },
+  {
+   "step": "archive manifest complete and every copy verified",
+   "pass": true,
+   "detail": "39 files"
+  },
+  {
+   "step": "restore path: the published version opens the archived data again",
+   "pass": true,
+   "detail": [
+    "restore_check\\instance\\app",
+    "1",
+    "1",
+    "34",
+    "1"
+   ]
+  },
+  {
+   "step": "Administrator first sign-in opens the password page",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "step": "Administrator continues to Account management without signing in again",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "step": "Analyst username and temporary password shown together and copied with one action",
+   "pass": true,
+   "detail": false
+  },
+  {
+   "step": "Analyst first sign-in opens the password page",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "step": "Analyst continues to New Mission without signing in again",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "step": "demonstration flight processed to Complete with both models on every sampled frame",
+   "pass": true,
+   "detail": {
+    "mission": 1,
+    "state": "Complete",
+    "submit_to_complete_seconds": 52.8,
+    "app_seconds": 48.88,
+    "yolov8n_frames": 37,
+    "yolov8s_frames": 37,
+    "observations": 32,
+    "agreement": {
+     "Both models": 27,
+     "One model": 5
+    }
+   }
+  },
+  {
+   "step": "results list every observation with a neutral agreement label",
+   "pass": true,
+   "detail": {
+    "Both models": 27,
+    "One model": 5
+   }
+  },
+  {
+   "step": "a model that did not report the detection is shown with a dash",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "step": "Confirmed and Rejected decisions stored independently of the agreement label",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "step": "agreement filter shows only One model observations",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "step": "GPX 1.1 valid with the Confirmed observations only",
+   "pass": true,
+   "detail": 3
+  },
+  {
+   "step": "PDF lists every observation with agreement and review status",
+   "pass": true,
+   "detail": "2811968 bytes"
+  },
+  {
+   "step": "mission history shows the mission",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "step": "second analyst session works",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "step": "Administrator signs in with the personal password",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "step": "password reset ends the analyst sessions",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "step": "analyst sets a new password after the reset and continues to New Mission",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "step": "Chrome: submission, review and exports complete",
+   "pass": true,
+   "detail": {
+    "ok": true,
+    "chrome_version": "154.0.8037.57",
+    "mission": 2,
+    "state": "Complete",
+    "observations": 32,
+    "gpx_waypoints": 1
+   }
+  }
+ ],
+ "upgrade": {
+  "legacy_rows": {
+   "users": 1,
+   "missions": 1,
+   "observations": 34
+  },
+  "files": 39
+ },
+ "edge_version": "156.0.4314.42",
+ "demo": {
+  "mission": 1,
+  "state": "Complete",
+  "submit_to_complete_seconds": 52.8,
+  "app_seconds": 48.88,
+  "yolov8n_frames": 37,
+  "yolov8s_frames": 37,
+  "observations": 32,
+  "agreement": {
+   "Both models": 27,
+   "One model": 5
+  }
+ },
+ "chrome": {
+  "ok": true,
+  "chrome_version": "154.0.8037.57",
+  "mission": 2,
+  "state": "Complete",
+  "observations": 32,
+  "gpx_waypoints": 1
+ }
+}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}New Mission · DALEEL{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div class="page-header__title"><h1>New Mission</h1></div>
+  <p class="page-header__sub">Upload flight footage and corresponding telemetry to begin a mission analysis.</p>
+</header>
+{% if error %}<div class="inline-error is-visible" role="alert">{{ error }}</div>{% endif %}
+<form id="mission-upload" method="post" enctype="multipart/form-data" aria-describedby="availability-notice">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+  <div class="upload-grid">
+    <label class="dropzone file-panel" id="dz-video" for="video">
+      <span class="dropzone__step">Step 01 — Footage</span>
+      <span class="dropzone__icon file-icon">{{ icon('video',18) }}</span>
+      <span class="dropzone__title" id="video-label">Upload video file</span>
+      <span class="dropzone__hint" id="video-hint">MP4 · Max 500 MB</span>
+      <span class="dropzone__filename file-selection" id="video-selection" aria-live="polite" hidden></span>
+      <input id="video" type="file" name="video" accept=".mp4" aria-describedby="video-hint" required data-file-feedback="video-selection">
+    </label>
+    <label class="dropzone file-panel" id="dz-srt" for="srt">
+      <span class="dropzone__step">Step 02 — Telemetry</span>
+      <span class="dropzone__icon file-icon">{{ icon('document',18) }}</span>
+      <span class="dropzone__title" id="srt-label">Upload SRT file</span>
+      <span class="dropzone__hint" id="srt-hint">Corresponding UAV telemetry · UTF-8 SRT</span>
+      <span class="dropzone__filename file-selection" id="srt-selection" aria-live="polite" hidden></span>
+      <input id="srt" type="file" name="srt" accept=".srt" aria-describedby="srt-hint" required data-file-feedback="srt-selection">
+    </label>
+  </div>
+  <div class="upload-actions">
+    <span class="upload-actions__hint" id="availability-notice">Files are validated before submission. Follow processing on the next screen.</span>
+    <div class="actions">
+      <a class="btn btn--secondary" href="{{ url_for('main.history') }}">Cancel</a>
+      <button id="submit-mission" type="submit" class="btn btn--primary"><span data-submit-label>Submit mission</span>{{ icon('arrow') }}</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Mission {{ mission.mission_id }} results · DALEEL{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/leaflet/leaflet.css') }}">
+<script src="{{ url_for('static', filename='vendor/leaflet/leaflet.js') }}"></script>
+<script src="{{ url_for('static', filename='map.js') }}" defer></script>
+{% endblock %}
+{% block content %}
+<h1 class="sr-only">Mission Results</h1>
+<div class="results-shell">
+  <section class="results-list" aria-labelledby="observations-heading">
+    <div class="results-list__head">
+      <div class="results-list__title"><h2 id="observations-heading">Observations</h2><span class="results-list__title-count" id="visible-observation-count">{{ observations|length }} observations</span></div>
+      {% if observations %}
+      <div class="results-list__filters" aria-label="Filter observations by model agreement">
+        <button type="button" class="chip is-active" aria-pressed="true" data-agreement-filter="all">All</button>
+        <button type="button" class="chip" aria-pressed="false" data-agreement-filter="Both models">Both models</button>
+        <button type="button" class="chip" aria-pressed="false" data-agreement-filter="One model">One model</button>
+      </div>
+      {% endif %}
+    </div>
+    <div class="observation-list" aria-label="Mission observations">
+      {% for observation_number, observation in numbered_observations %}
+      {% set coords = coordinate_pair(observation.latitude, observation.longitude) %}
+      {% set agreement = 'both' if observation.agreement == 'Both models' else 'one' %}
+      <article class="observation-card" id="observation-{{ observation.observation_id }}" data-observation-number="{{ observation_number }}" data-agreement="{{ observation.agreement }}" data-review-state="{{ observation.review_status }}">
+        <a class="detection" href="#evidence-{{ observation.observation_id }}" data-open-observation aria-label="Review Observation {{ observation_number }}: {{ target_label(observation.target_class) }}, {{ observation.agreement }}, {{ observation.review_status }}">
+          <span class="detection__icon detection__icon--{{ agreement }}" title="{{ target_label(observation.target_class) }} · {{ observation.agreement }}">{{ icon(observation.target_class,22) }}</span>
+          <div class="detection__body"><p class="observation-number">Observation {{ observation_number }}</p><span class="detection__status review-{{ observation.review_status|lower }}">{{ observation.review_status }}</span></div>
+        </a>
+        <div class="observation-details" id="evidence-{{ observation.observation_id }}">
+          <div class="frame-image">
+            <div class="observation-image-link">
+              <img class="observation-evidence" src="{{ url_for('main.frame', observation_id=observation.observation_id) }}" alt="Representative evidence for Observation {{ observation_number }}" loading="lazy">
+            </div>
+            <p class="evidence-notice" hidden>Evidence image unavailable.</p>
+            <button type="button" class="frame-image__close" data-frame-close aria-label="Close evidence" hidden>{{ icon('close',13) }}</button>
+            <div class="frame-image__meta">Observation {{ observation_number }} · {{ format_video_clock(observation.video_time_ms, full=True) }}</div>
+          </div>
+          <div class="frame-info">
+            <div class="frame-info__banner frame-info__banner--{{ agreement }}" title="Which detection models reported the detection shown. This is model information, not a review decision."><span class="frame-info__banner-label">Model agreement</span>{{ observation.agreement }}</div>
+            <div class="frame-info__id">Observation {{ observation_number }} · {{ observation.review_status }}</div>
+            <h2 class="frame-info__class">{{ target_label(observation.target_class) }}</h2>
+            <dl class="frame-info__grid">
+              <div><dt class="frame-info__row-lbl">Latitude</dt><dd class="frame-info__row-val">{{ '%.6f'|format(coords[0]) ~ '°' if coords else 'Unavailable' }}</dd></div>
+              <div><dt class="frame-info__row-lbl">Longitude</dt><dd class="frame-info__row-val">{{ '%.6f'|format(coords[1]) ~ '°' if coords else 'Unavailable' }}</dd></div>
+              <div><dt class="frame-info__row-lbl" title="Elapsed video time (HH:MM:SS.mmm)">Video timestamp</dt><dd class="frame-info__row-val">{{ format_video_clock(observation.video_time_ms, full=True) }}</dd></div>
+              <div><dt class="frame-info__row-lbl">Supporting frames</dt><dd class="frame-info__row-val">{{ observation.frame_count }}</dd></div>
+              <div><dt class="frame-info__row-lbl">First frame</dt><dd class="frame-info__row-val">{{ observation.first_frame_index }}</dd></div>
+              <div><dt class="frame-info__row-lbl">Last frame</dt><dd class="frame-info__row-val">{{ observation.last_frame_index }}</dd></div>
+            </dl>
+            <div class="frame-scores">
+              <div class="frame-scores__title">Model confidence</div>
+              {% for model, score in (('YOLOv8n', observation.yolov8n_score), ('YOLOv8s', observation.yolov8s_score)) %}
+              <div class="score-row"><span class="score-row__model">{{ model }}</span><div class="score-bar"><div class="score-bar__fill" style="--score: {{ (score or 0) * 100 }}%"></div></div><span class="score-row__val" {% if score is none %}title="{{ model }} did not report this detection"{% endif %}>{{ '%.0f'|format(score * 100) ~ '%' if score is not none else '—' }}</span></div>
+              {% endfor %}
+            </div>
+            <form class="review-actions" aria-label="Review Observation {{ observation_number }}" method="post" action="{{ url_for('main.review', observation_id=observation.observation_id) }}">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn--secondary decision-confirm" type="submit" name="review_status" value="Confirmed" aria-pressed="{{ 'true' if observation.review_status == 'Confirmed' else 'false' }}">{{ icon('check') }} Confirm</button>
+              <button class="btn btn--secondary decision-reject" type="submit" name="review_status" value="Rejected" aria-pressed="{{ 'true' if observation.review_status == 'Rejected' else 'false' }}">{{ icon('close') }} Reject</button>
+            </form>
+            <div class="observation-links">
+              {% if coords %}<a class="btn btn--secondary" href="#map" data-map-observation="{{ observation_number }}">{{ icon('map') }} Show on map</a>{% else %}<span>Map point unavailable</span>{% endif %}
+            </div>
+          </div>
+        </div>
+      </article>
+      {% else %}<div class="empty-results"><div><h3>No observations found</h3><p>No person or vehicle observations were identified in the sampled video frames.</p></div></div>{% endfor %}
+    </div>
+  </section>
+  <section class="results-map-wrap map-panel" aria-label="Evidence map">
+    <div class="results-toolbar">
+      <div class="results-toolbar__stats" aria-label="Review summary">
+        <div class="stat-pill"><span class="stat-pill__num">{{ observations|length }}</span><span class="stat-pill__lbl">Total</span></div>
+        <div class="stat-pill stat-pill--confirmed"><span class="stat-pill__num">{{ review_counts.Confirmed }}</span><span class="stat-pill__lbl">Confirmed</span></div>
+        <div class="stat-pill stat-pill--unreviewed"><span class="stat-pill__num">{{ review_counts.Unreviewed }}</span><span class="stat-pill__lbl">Unreviewed</span></div>
+      </div>
+      <div class="results-toolbar__exports" aria-label="Mission exports">
+        <a class="btn btn--secondary" href="{{ url_for('main.export_gpx', mission_id=mission.mission_id) }}" title="Download confirmed map points">{{ icon('download',13) }} Export GPX</a>
+        <a class="btn btn--secondary" href="{{ url_for('main.export_pdf', mission_id=mission.mission_id) }}">{{ icon('document',13) }} Generate PDF</a>
+      </div>
+    </div>
+    <div id="map" role="region" aria-label="UAV positions associated with mission observations"></div>
+    <div class="map-status" id="map-status"><p id="map-notice" role="status">Loading satellite imagery. An internet connection is required for map tiles.</p><button type="button" class="btn btn--ghost" data-map-retry hidden>Retry</button></div>
+  </section>
+</div>
+<dialog class="frame-modal" id="evidence-dialog" aria-label="Observation evidence">
+  <div class="frame-panel" id="evidence-dialog-panel"></div>
+</dialog>
+<script id="map-data" type="application/json" nonce="{{ csp_nonce() }}">{{ map_payload|tojson }}</script>
+
+{% endblock %}

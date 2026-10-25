@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Mission History · DALEEL{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div class="page-header__title"><h1>Mission History</h1></div>
+</header>
+<div class="history-search">
+  <label for="history-search" class="sr-only">Search mission history</label>
+  <input id="history-search" type="search" placeholder="Search by mission ID or video filename" data-history-search>
+  <a class="btn btn--primary" href="{{ url_for('main.upload') }}">{{ icon('plus',13) }} New Mission</a>
+</div>
+{% if missions %}
+<div class="table-wrap" tabindex="0" role="region" aria-label="Mission history table">
+  <table class="table mission-table">
+    <caption class="sr-only">Mission processing history</caption>
+    <colgroup><col class="mission-table__id"><col class="mission-table__video"><col class="mission-table__date"><col class="mission-table__observations"><col class="mission-table__status"><col class="mission-table__actions"></colgroup>
+    <thead><tr><th scope="col">Mission</th><th scope="col">Video</th><th scope="col" title="Arabia Standard Time (UTC+03:00)">Submitted (AST)</th><th scope="col">Observations</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+    <tbody>
+      {% for mission in missions %}
+      {% set complete = mission.status == 'Complete' %}
+      <tr data-history-row data-mission-href="{{ url_for('main.results' if complete else 'main.status', mission_id=mission.mission_id) }}">
+        <td data-label="Mission" class="session-id"><a href="{{ url_for('main.results' if complete else 'main.status', mission_id=mission.mission_id) }}" aria-label="Open Mission {{ mission.mission_id }}">M-{{ '%03d'|format(mission.mission_id) }}</a></td>
+        <td data-label="Video" class="video-name filename" title="{{ original_video_name(mission) }}">{{ original_video_name(mission) }}</td>
+        <td data-label="Submitted (AST)"><span class="date-rel">{{ saudi_datetime(mission.submitted_at).strftime('%d %b %Y') }}</span><span class="date-abs">{{ format_mission_clock(mission.submitted_at) }}</span></td>
+        <td data-label="Observations"><span class="mono">{{ mission.observations|length }}</span><span class="tracks-summary">{{ mission.observations|selectattr('review_status','equalto','Confirmed')|list|length }} Confirmed</span></td>
+        <td data-label="Status"><span class="status-badge status-badge--{{ mission.status|lower }}"><span class="status-dot" aria-hidden="true"></span>{{ mission.status }}</span></td>
+        <td class="mission-actions">{% if mission.status != 'Processing' %}<a class="btn btn--ghost delete-link" href="{{ url_for('main.delete_mission', mission_id=mission.mission_id) }}" aria-label="Delete Mission {{ mission.mission_id }}" title="Delete mission">{{ icon('trash',16) }}</a>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="history-no-matches" data-history-empty role="status" hidden>No missions match your search.</p>
+{% else %}
+<div class="table-wrap empty-state"><div class="empty-state__inner"><h3>No missions yet</h3><p>Submit your first mission to begin reviewing observations.</p><a class="btn btn--secondary" href="{{ url_for('main.upload') }}">New Mission {{ icon('arrow') }}</a></div></div>
+{% endif %}
+{% endblock %}

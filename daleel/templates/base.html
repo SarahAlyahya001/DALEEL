@@ -1,0 +1,70 @@
+{% from "_icons.html" import icon %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}DALEEL{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='interface.js') }}" defer></script>
+  {% block head %}{% endblock %}
+</head>
+<body class="{{ 'authenticated' if g_user else 'signed-out' }}{% if request.endpoint == 'main.results' %} results-page{% endif %}">
+<a class="skip-link" href="#main-content">Skip to main content</a>
+{% if g_user %}
+<div class="shell">
+  <aside class="sidebar" id="primary-sidebar">
+    <div class="sidebar__header">
+      <div class="sidebar__brand"><span class="sidebar__brand-name">DALEEL</span></div>
+      <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="primary-sidebar" aria-expanded="true" aria-label="Collapse sidebar" title="Collapse sidebar" hidden><span class="sidebar-toggle__collapse">{{ icon('panel-close',20) }}</span><span class="sidebar-toggle__expand">{{ icon('panel-open',20) }}</span></button>
+    </div>
+    <div>
+      <div class="sidebar__section-label">{{ 'Administration' if g_user.is_admin else 'Operations' }}</div>
+      <nav class="sidebar__nav nav-links" aria-label="Primary navigation">
+        {% if g_user.role == 'analyst' %}
+        <a class="sidebar__link{{ ' is-active' if request.endpoint == 'main.upload' else '' }}" href="{{ url_for('main.upload') }}" aria-label="New Mission" data-tooltip="New Mission" {% if request.endpoint == 'main.upload' %}aria-current="page"{% endif %}>{{ icon('plus',20) }}<span class="sidebar__link-label">New Mission</span></a>
+        <a class="sidebar__link{{ ' is-active' if request.endpoint in ('main.history', 'main.delete_mission') else '' }}" href="{{ url_for('main.history') }}" aria-label="Mission History" data-tooltip="Mission History" {% if request.endpoint in ('main.history', 'main.delete_mission') %}aria-current="page"{% endif %}>{{ icon('history',20) }}<span class="sidebar__link-label">Mission History</span><span class="sidebar__link-count">{{ g_user.missions|length }}</span></a>
+        {% if request.endpoint == 'main.status' %}
+        <a class="sidebar__link is-active" href="{{ url_for('main.status', mission_id=mission.mission_id) }}" aria-label="Processing Status" data-tooltip="Processing Status" aria-current="page">{{ icon('processing',20) }}<span class="sidebar__link-label">Processing Status</span></a>
+        {% elif request.endpoint == 'main.results' %}
+        <a class="sidebar__link is-active" href="{{ url_for('main.results', mission_id=mission.mission_id) }}" aria-label="Current results" data-tooltip="Current results" aria-current="page">{{ icon('results',20) }}<span class="sidebar__link-label">Current results</span><span class="sidebar__link-count">{{ observations|length }}</span></a>
+        {% endif %}
+        {% elif g_user.is_admin %}
+        <a class="sidebar__link is-active" href="{{ url_for('admin.accounts') }}" aria-label="Account Management" data-tooltip="Account Management" aria-current="page">{{ icon('accounts',20) }}<span class="sidebar__link-label">Account Management</span></a>
+        {% endif %}
+      </nav>
+    </div>
+    <div class="sidebar__user">
+      <div class="sidebar__avatar" aria-hidden="true">{{ g_user.username[:2]|upper }}</div>
+      <div class="sidebar__user-meta">
+        <strong title="{{ g_user.display_name }}">{{ g_user.display_name }}</strong>
+        <span>{{ 'Administrator' if g_user.is_admin else 'Analyst' }}</span>
+      </div>
+      <form method="post" action="{{ url_for('auth.logout') }}" class="nav-form">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="sidebar__logout nav-logout" title="Sign out" aria-label="Sign out">{{ icon('logout') }}</button>
+      </form>
+    </div>
+  </aside>
+  <div class="main application-shell">
+    <header class="topbar">
+      <div class="topbar__crumb">{{ 'Administration' if g_user.is_admin else 'Operations' }} / <strong>{{ {'main.upload': 'New Mission', 'main.history': 'History', 'main.status': 'Processing', 'main.results': 'Results', 'main.delete_mission': 'Delete mission', 'admin.accounts': 'Accounts', 'admin.edit_account': 'Edit account', 'admin.reset_password': 'Temporary password'}.get(request.endpoint, 'Mission') }}</strong></div>
+      <div class="topbar__session">{% if mission is defined %}Mission <strong>{{ mission.mission_id }}</strong><span class="topbar__submitted" title="Arabia Standard Time (UTC+03:00)">{{ saudi_datetime(mission.submitted_at).strftime('%d %b') }} · {{ format_mission_clock(mission.submitted_at) }} AST</span>{% else %}{{ 'Administrator' if g_user.is_admin else 'No active mission' }}{% endif %}</div>
+    </header>
+{% else %}
+<div class="application-shell">
+{% endif %}
+<main class="container {{ 'content--no-pad' if request.endpoint in ('auth.login', 'main.results') else 'content' }}" id="main-content" tabindex="-1">
+  {% block flashes %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="flash flash-{{ cat }}" role="{{ 'alert' if cat == 'error' else 'status' }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+  {% endblock %}
+  {% block content %}{% endblock %}
+</main>
+</div>
+{% if g_user %}</div>{% endif %}
+</body>
+</html>
