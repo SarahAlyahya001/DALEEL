@@ -95,7 +95,7 @@ install_daleel() {
     install_python
     if [ -e "$VENV" ] && ! venv_uses_daleel_python; then
         [ -L "$VENV" ] && fail "the .venv folder is a link to another folder. Remove the link, then run sh start.sh again."
-        echo "Replacing the existing .venv folder, which was not made with DALEEL's Python $PYTHON_VERSION."
+        echo "Rebuilding the .venv folder, which does not use DALEEL's Python $PYTHON_VERSION in this folder."
         echo "Accounts, passwords, missions and evidence are kept in the instance folder and are not affected."
         rm -rf "$VENV"
     fi
@@ -120,7 +120,7 @@ install_daleel() {
 }
 
 cd "$ROOT"
-if [ -x "$PYTHON" ] && [ -f "$MARKER" ] && [ "$(cat "$MARKER")" = "$(setup_id)" ]; then
+if [ -f "$MARKER" ] && [ "$(cat "$MARKER")" = "$(setup_id)" ] && venv_uses_daleel_python; then
     echo "Checking the detection models..."
 else
     install_daleel

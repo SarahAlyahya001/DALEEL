@@ -53,7 +53,9 @@ function Get-SetupId {
 }
 
 function Test-Setup {
-    (Test-Path $Python) -and (Test-Path $Marker) -and ((Get-Content $Marker -Raw).Trim() -eq (Get-SetupId))
+    # The environment stops working if the folder is moved after the setup; it is then rebuilt.
+    (Test-Path $Python) -and (Test-Path $Marker) -and ((Get-Content $Marker -Raw).Trim() -eq (Get-SetupId)) -and
+        (Test-VenvPython)
 }
 
 function Install-Python {
@@ -99,7 +101,7 @@ function Install-Daleel {
         if ((Get-Item $Venv -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) {
             throw 'The .venv folder is a link to another folder. Remove the link, then run start.bat again.'
         }
-        Write-Host "Replacing the existing .venv folder, which was not made with DALEEL's Python $PythonVersion."
+        Write-Host "Rebuilding the .venv folder, which does not use DALEEL's Python $PythonVersion in this folder."
         Write-Host 'Accounts, passwords, missions and evidence are kept in the instance folder and are not affected.'
         Remove-Item -Recurse -Force $Venv
     }

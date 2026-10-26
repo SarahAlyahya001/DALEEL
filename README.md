@@ -39,7 +39,7 @@ Windows; see [Supported systems](#supported-systems) for what has been tested.
 
 | Download | Size | Source |
 | --- | ---: | --- |
-| DALEEL release v2.0.2 | 30 MB | this repository |
+| DALEEL v2.0.3 (ZIP file) | 30 MB | this repository's [latest release](https://github.com/SarahAlyahya001/DALEEL/releases/latest) |
 | Python 3.10.11 | 16 MB | python.org's official NuGet package, checked by its SHA-256 and signature |
 | Python packages (PyTorch, Ultralytics, OpenCV and others) | 540 MB | PyPI, at the exact versions in [`requirements-lock.txt`](requirements-lock.txt) |
 | The two detection models | 29 MB | this repository's [release v2.0.0](https://github.com/SarahAlyahya001/DALEEL/releases/tag/v2.0.0), checked by their SHA-256 |
@@ -50,25 +50,21 @@ changed, and deleting the folder removes DALEEL completely.
 <details open>
 <summary><b>1. Install and start DALEEL</b></summary>
 
-**Recommended: one command.** Press **Windows key + R**, paste this line and press **Enter**:
+1. Open the [latest release](https://github.com/SarahAlyahya001/DALEEL/releases/latest) and,
+   under **Assets**, download **Source code (zip)**.
+2. Right-click the downloaded ZIP file, choose **Extract All…** and then **Extract**. Windows
+   creates a folder such as `DALEEL-2.0.3`, with a folder of the same name inside it.
+3. Open the inner folder, the one that contains `start.bat`. Right-click an empty area of the
+   folder and choose **Open in Terminal**. (On Windows 10, hold **Shift** while right-clicking
+   and choose **Open PowerShell window here**.)
+4. Type `.\start.bat` and press **Enter**.
 
-```text
-powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/SarahAlyahya001/DALEEL/v2.0.2/scripts/install.ps1 | iex"
-```
+The window sets DALEEL up in three numbered steps, showing the progress of each download, and
+then starts it. How long this takes depends mainly on the speed of the internet connection. If
+the connection drops, run `.\start.bat` again: completed downloads are kept.
 
-A window opens and downloads DALEEL v2.0.2 into the folder `DALEEL` in your user folder (for
-example `C:\Users\<name>\DALEEL`). It then sets DALEEL up in three numbered steps, showing the
-progress of each download, and starts it. How long this takes depends mainly on the speed of the
-internet connection. If the connection drops, run the command again: completed downloads are
-kept.
-
-**Alternative: ZIP file.**
-
-1. Download **Source code (zip)** from the
-   [v2.0.2 release](https://github.com/SarahAlyahya001/DALEEL/releases/tag/v2.0.2).
-2. Right-click the ZIP file, choose **Extract All…** and then **Extract**.
-3. Open the extracted folder, the one that contains `start.bat`. Right-click an empty area of
-   the folder, choose **Open in Terminal**, type `.\start.bat` and press **Enter**.
+Keep the folder where it is after the first start. If it is moved, the next start sets up the
+Python environment again; accounts and missions are not affected.
 
 `start.bat` can also be double-clicked, but depending on its security settings, Windows may not
 open a file from a downloaded ZIP file this way. The terminal works in either case.
@@ -174,10 +170,10 @@ results again, or delete a completed mission after confirming.
 <summary><b>9. Stop DALEEL and start it again later</b></summary>
 
 - **Stop:** close the DALEEL window.
-- **Start again:** run `start.bat` in the DALEEL folder (for example by opening a terminal there
-  and typing `.\start.bat`), or run the one-line command from step 1 again. Later starts skip the
-  setup and open DALEEL in your browser; sign in with your personal password. DALEEL can also be
-  started directly with `.\.venv\Scripts\python.exe run.py` in a terminal in the DALEEL folder.
+- **Start again:** open a terminal in the DALEEL folder (the one that contains `start.bat`) and
+  type `.\start.bat`. Later starts skip the setup and open DALEEL in your browser; sign in with
+  your personal password. DALEEL can also be started directly with
+  `.\.venv\Scripts\python.exe run.py` in a terminal in the DALEEL folder.
 
 Accounts, passwords, missions and evidence are kept in the `instance` folder inside the DALEEL
 folder. Starting DALEEL again, or running the setup again, does not change them.
@@ -193,17 +189,17 @@ video subtitles are enabled in the camera settings.
 | Situation | What to do |
 | --- | --- |
 | Windows does not open `start.bat` when it is double-clicked | Open a terminal in the DALEEL folder and run `.\start.bat`. |
-| The first start stopped, for example because the connection dropped | Run the command or `start.bat` again. Completed downloads are kept, and the window names the step that failed. |
+| The first start stopped, for example because the connection dropped | Run `.\start.bat` again. Completed downloads are kept, and the window names the step that failed. |
 | "Another program is using port 5000" | Close that program, or run `$env:DALEEL_PORT = '5050'; .\start.bat` in PowerShell in the DALEEL folder and open http://127.0.0.1:5050. |
 | The temporary Administrator password was lost | Follow [Forgotten Administrator password](docs/ACCOUNT_MANAGEMENT.md#forgotten-administrator-password). |
-| The command reports that the DALEEL folder already contains an earlier version | It does not change that installation. To update while keeping accounts and missions, follow [Updating to a new release](docs/ACCOUNT_MANAGEMENT.md#updating-to-a-new-release). |
-| The folder `DALEEL` already exists for something else | Rename or move that folder, then run the command again. |
+| An earlier version of DALEEL is already installed | Extract the new release into a new folder rather than over the old one, and follow [Updating to a new release](docs/ACCOUNT_MANAGEMENT.md#updating-to-a-new-release) to keep accounts and missions. |
+| The window says the `.venv` folder is being rebuilt | This happens after the folder was moved, and takes a few minutes. Accounts and missions are not affected. |
 
 ## Supported systems
 
 | System | Status |
 | --- | --- |
-| Windows 11, 64-bit | Tested: installation with the one-line command, the complete workflow above, and restarting with existing data. |
+| Windows 11, 64-bit | Tested: installation from the release ZIP file with `start.bat`, the complete workflow above, and restarting with existing data. |
 | Windows 10, 64-bit | Expected to work in the same way; not tested. |
 | Linux (x86-64) | Checked automatically on Ubuntu 26.04 (GitHub Actions): `sh start.sh` sets DALEEL up, both models load, and the website starts and serves its sign-in page. The workflow in the browser has not been tested on Linux. |
 | macOS on Apple silicon, Linux on ARM64 | `sh start.sh` is provided; not tested. |

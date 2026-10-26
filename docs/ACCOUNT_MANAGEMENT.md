@@ -67,9 +67,8 @@ stops without changing anything.
 
 ## Updating to a new release
 
-DALEEL is not updated automatically, and the one-line installer never changes an existing
-installation. To move to a new release while keeping all accounts, passwords, missions and
-evidence:
+DALEEL is not updated automatically. To move to a new release while keeping all accounts,
+passwords, missions and evidence:
 
 1. Stop DALEEL by closing its window.
 2. Download the new release as a ZIP file from the
@@ -78,9 +77,9 @@ evidence:
 3. Copy the `instance` folder from the existing installation into the new folder, next to
    `start.bat`. Copy it; do not move it, so that the existing installation stays complete as a
    backup.
-4. Start the new release with `start.bat` in the new folder. The first start sets up Python and
-   the packages as described in the README; accounts and missions are those of the copied
-   `instance` folder, so no new Administrator is created.
+4. Start the new release by running `.\start.bat` in a terminal in the new folder. The first
+   start sets up Python and the packages as described in the README; accounts and missions are
+   those of the copied `instance` folder, so no new Administrator is created.
 5. When the new release works as expected, the old folder can be deleted.
 
 A release earlier than v2.0.1 has no `start.bat`; its data is updated the same way.
