@@ -8,6 +8,8 @@ htmlcov/
 .venv/
 venv/
 env/
+# Python 3.10.11 and the package cache downloaded by start.bat and start.sh
+.tools/
 
 # Local configuration and credentials
 .env

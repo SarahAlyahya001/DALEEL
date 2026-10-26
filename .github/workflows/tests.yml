@@ -21,11 +21,48 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt -r requirements-dev.txt
+          python -m pip install -r requirements.txt -r requirements-dev.txt -c requirements-lock.txt
       - name: Run tests
         env:
           PYTHONDONTWRITEBYTECODE: "1"
         run: python -m pytest -q
+
+  start-scripts:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up DALEEL with start.bat
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: start.bat -SetupOnly < NUL
+      - name: Check that both models load with the installed environment (no inference)
+        if: runner.os == 'Windows'
+        run: .venv\Scripts\python.exe scripts/setup_weights.py --verify-only --load-check
+      - name: Set up DALEEL with start.sh
+        if: runner.os == 'Linux'
+        run: sh start.sh --setup-only
+      - name: Check that both models load with the installed environment (no inference)
+        if: runner.os == 'Linux'
+        run: .venv/bin/python scripts/setup_weights.py --verify-only --load-check
+      - name: Create the first Administrator and start the website with start.sh
+        if: runner.os == 'Linux'
+        run: |
+          # The temporary credentials are shown only in an interactive terminal; script provides one.
+          script -qec ".venv/bin/python run.py init" /dev/null > /dev/null
+          sh start.sh > start.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            curl -fsS -o /dev/null http://127.0.0.1:5000/login && break
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:5000/login | grep -q "Sign in"
+      - name: Show the start.sh log
+        if: always() && runner.os == 'Linux'
+        run: cat start.log || true
 
   container:
     runs-on: ubuntu-latest

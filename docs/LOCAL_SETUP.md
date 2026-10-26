@@ -12,8 +12,8 @@ general pretrained models.
 | `yolov8n_sar_v1.pt` | 6,566,033 | `21f16d2d72ec76bf020eeeddbc3b59836fa534af43fc88ec3723ce2b7af72e7d` |
 | `yolov8s_sar_v1.pt` | 22,605,073 | `90cda60aea2091c62a388954fe192104f9c5dbce96397bee00cbf4d650c40af4` |
 
-Run the commands below from the project folder (the folder that contains `run.py`) after
-installing the dependencies.
+`start.bat` and `start.sh` run the download and check automatically. Run the commands below
+from the project folder (the folder that contains `run.py`) after DALEEL has been set up.
 
 ## Download and verify
 
@@ -57,3 +57,28 @@ control.
 The detection settings are fixed: both models analyze every 15th video frame at an input size
 of 1280 pixels and keep detections with a confidence above 0.42. `DALEEL_IMGSZ` (640, 960 or
 1280) exists for experimentation only; the evaluation in DATASET_EVALUATION.md applies to 1280.
+
+## Install without the start script
+
+`start.bat` (Windows) does these steps automatically. It downloads Python 3.10.11 from python.org's
+official NuGet package into the `.tools` folder, keeps it only if its SHA-256 and its Python
+Software Foundation signature are correct, and installs the packages with pip using
+`requirements-lock.txt`, the exact versions DALEEL was tested and evaluated with. `start.sh`
+(Linux and macOS, not yet tested) does the same with Python 3.10.11 from python-build-standalone.
+
+To do the steps by hand, first install
+[Python 3.10.11](https://www.python.org/downloads/release/python-31011/), the version DALEEL was
+developed and tested with. Newer versions do not work: PyTorch 2.3.1, which DALEEL requires,
+cannot be installed on Python 3.13 or later. Then run, from the project folder:
+
+```powershell
+py -3.10 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt -c requirements-lock.txt
+.\.venv\Scripts\python.exe scripts/setup_weights.py
+.\.venv\Scripts\python.exe run.py
+```
+
+On Linux or macOS, create the environment with `python3.10 -m venv .venv` and use
+`.venv/bin/python` instead of `.\.venv\Scripts\python.exe`. If `.venv` already exists from an
+attempt with another Python version, delete the `.venv` folder first; accounts, missions and
+evidence are in the `instance` folder and are not affected.

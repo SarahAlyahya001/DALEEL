@@ -2,7 +2,7 @@
 
 ## First Administrator
 
-On the first start (`.\.venv\Scripts\python.exe run.py` from the project folder), DALEEL
+On the first start (`start.bat`, or `.\.venv\Scripts\python.exe run.py` from the project folder), DALEEL
 creates one Administrator and displays its temporary username and password once in the
 interactive terminal. On a server, `python run.py init` does the same without starting the
 website, so that the website can then run as a service (see [Put DALEEL online](DEPLOYMENT.md)).
@@ -34,11 +34,12 @@ password recovery.
 
 ## Forgotten Administrator password
 
-Run these commands in an interactive terminal from the repository root:
+Run these commands in an interactive terminal from the repository root (on Linux or macOS,
+use `.venv/bin/python`):
 
 ```powershell
-python run.py recover-admin --check
-python run.py recover-admin
+.\.venv\Scripts\python.exe run.py recover-admin --check
+.\.venv\Scripts\python.exe run.py recover-admin
 ```
 
 The first command confirms that recovery is possible without changing anything. The second
@@ -64,10 +65,32 @@ version. The original folders are only read and stay where they are; DALEEL then
 fresh database and the usual first Administrator setup. If a copy cannot be verified, DALEEL
 stops without changing anything.
 
+## Updating to a new release
+
+DALEEL is not updated automatically, and the one-line installer never changes an existing
+installation. To move to a new release while keeping all accounts, passwords, missions and
+evidence:
+
+1. Stop DALEEL by closing its window.
+2. Download the new release as a ZIP file from the
+   [releases page](https://github.com/SarahAlyahya001/DALEEL/releases) and extract it into a new
+   folder. Do not extract it over the existing installation.
+3. Copy the `instance` folder from the existing installation into the new folder, next to
+   `start.bat`. Copy it; do not move it, so that the existing installation stays complete as a
+   backup.
+4. Start the new release with `start.bat` in the new folder. The first start sets up Python and
+   the packages as described in the README; accounts and missions are those of the copied
+   `instance` folder, so no new Administrator is created.
+5. When the new release works as expected, the old folder can be deleted.
+
+A release earlier than v2.0.1 has no `start.bat`; its data is updated the same way.
+
+## Account migration
+
 If startup reports that an account migration is required, run:
 
 ```powershell
-python run.py migrate-accounts
+.\.venv\Scripts\python.exe run.py migrate-accounts
 ```
 
 The command creates and verifies a recoverable SQLite backup, adds the
