@@ -1,5 +1,6 @@
 #!/bin/sh
-# Sets up and starts DALEEL on Linux and macOS: sh start.sh (see README.md). Not yet tested on these systems.
+# Sets up and starts DALEEL on Linux and macOS: sh start.sh (see README.md). Setup and startup are
+# checked automatically on Ubuntu; macOS has not been tested.
 # The first run downloads Python 3.10.11, the packages in requirements.txt and the two model files
 # into this folder (.tools, .venv and weights). Later runs start DALEEL straight away.
 # Nothing is installed elsewhere on the computer, and the instance folder (accounts, passwords,

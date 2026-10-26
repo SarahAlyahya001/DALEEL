@@ -64,7 +64,8 @@ of 1280 pixels and keep detections with a confidence above 0.42. `DALEEL_IMGSZ` 
 official NuGet package into the `.tools` folder, keeps it only if its SHA-256 and its Python
 Software Foundation signature are correct, and installs the packages with pip using
 `requirements-lock.txt`, the exact versions DALEEL was tested and evaluated with. `start.sh`
-(Linux and macOS, not yet tested) does the same with Python 3.10.11 from python-build-standalone.
+(Linux and macOS) does the same with Python 3.10.11 from python-build-standalone; its setup and
+startup are checked automatically on Ubuntu, and it has not been tested on macOS.
 
 To do the steps by hand, first install
 [Python 3.10.11](https://www.python.org/downloads/release/python-31011/), the version DALEEL was

@@ -204,7 +204,7 @@ video subtitles are enabled in the camera settings.
 | --- | --- |
 | Windows 11, 64-bit | Tested: installation with the one-line command, the complete workflow above, and restarting with existing data. |
 | Windows 10, 64-bit | Expected to work in the same way; not tested. |
-| Linux (x86-64) | `sh start.sh` is provided; not yet tested. |
+| Linux (x86-64) | Checked automatically on Ubuntu 26.04 (GitHub Actions): `sh start.sh` sets DALEEL up, both models load, and the website starts and serves its sign-in page. The workflow in the browser has not been tested on Linux. |
 | macOS on Apple silicon, Linux on ARM64 | `sh start.sh` is provided; not tested. |
 | Server with Docker | See [Put DALEEL online](#put-daleel-online). |
 

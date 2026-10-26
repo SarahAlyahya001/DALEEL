@@ -111,7 +111,7 @@ Good to know:
 ## Running without Docker
 
 DALEEL can also run directly on a server with Python 3.10.11. Install it with
-`sh start.sh --setup-only` in the project folder (not yet tested on Linux; see
+`sh start.sh --setup-only` in the project folder (checked automatically on Ubuntu; see
 [LOCAL_SETUP.md](LOCAL_SETUP.md#install-without-the-start-script) for the manual steps), run
 `.venv/bin/python run.py init` once in a terminal, and then run `.venv/bin/python run.py` as a
 service behind any reverse proxy that provides HTTPS (for example Caddy or Nginx), with these
