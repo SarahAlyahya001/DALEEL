@@ -1,8 +1,8 @@
-# Installs DALEEL release v2.0.1 with one command on Windows (README, step 1):
-#   powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/SarahAlyahya001/DALEEL/v2.0.1/scripts/install.ps1 | iex"
+# Installs DALEEL release v2.0.2 with one command on Windows (README, step 1):
+#   powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/SarahAlyahya001/DALEEL/v2.0.2/scripts/install.ps1 | iex"
 # It downloads that release into the DALEEL folder of the user's home folder (or into DALEEL_DIR, if set)
 # and runs start.bat there, which sets DALEEL up on the first start.
-# An existing folder is never overwritten: if it already holds DALEEL v2.0.1, that installation is
+# An existing folder is never overwritten: if it already holds DALEEL v2.0.2, that installation is
 # started; if it holds another version, or anything else, the command stops and explains what to do.
 
 function Install-DaleelProject {
@@ -10,7 +10,7 @@ function Install-DaleelProject {
     $ProgressPreference = 'SilentlyContinue'  # a progress bar makes Windows PowerShell downloads very slow
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
-    $release = 'v2.0.1'
+    $release = 'v2.0.2'
     $updateGuide = "https://github.com/SarahAlyahya001/DALEEL/blob/$release/docs/ACCOUNT_MANAGEMENT.md#updating-to-a-new-release"
     $target = Join-Path $HOME 'DALEEL'
     if ($env:DALEEL_DIR) { $target = $env:DALEEL_DIR }

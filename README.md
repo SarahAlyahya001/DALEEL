@@ -39,7 +39,7 @@ Windows; see [Supported systems](#supported-systems) for what has been tested.
 
 | Download | Size | Source |
 | --- | ---: | --- |
-| DALEEL release v2.0.1 | 30 MB | this repository |
+| DALEEL release v2.0.2 | 30 MB | this repository |
 | Python 3.10.11 | 16 MB | python.org's official NuGet package, checked by its SHA-256 and signature |
 | Python packages (PyTorch, Ultralytics, OpenCV and others) | 540 MB | PyPI, at the exact versions in [`requirements-lock.txt`](requirements-lock.txt) |
 | The two detection models | 29 MB | this repository's [release v2.0.0](https://github.com/SarahAlyahya001/DALEEL/releases/tag/v2.0.0), checked by their SHA-256 |
@@ -53,10 +53,10 @@ changed, and deleting the folder removes DALEEL completely.
 **Recommended: one command.** Press **Windows key + R**, paste this line and press **Enter**:
 
 ```text
-powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/SarahAlyahya001/DALEEL/v2.0.1/scripts/install.ps1 | iex"
+powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/SarahAlyahya001/DALEEL/v2.0.2/scripts/install.ps1 | iex"
 ```
 
-A window opens and downloads DALEEL v2.0.1 into the folder `DALEEL` in your user folder (for
+A window opens and downloads DALEEL v2.0.2 into the folder `DALEEL` in your user folder (for
 example `C:\Users\<name>\DALEEL`). It then sets DALEEL up in three numbered steps, showing the
 progress of each download, and starts it. How long this takes depends mainly on the speed of the
 internet connection. If the connection drops, run the command again: completed downloads are
@@ -65,7 +65,7 @@ kept.
 **Alternative: ZIP file.**
 
 1. Download **Source code (zip)** from the
-   [v2.0.1 release](https://github.com/SarahAlyahya001/DALEEL/releases/tag/v2.0.1).
+   [v2.0.2 release](https://github.com/SarahAlyahya001/DALEEL/releases/tag/v2.0.2).
 2. Right-click the ZIP file, choose **Extract All…** and then **Extract**.
 3. Open the extracted folder, the one that contains `start.bat`. Right-click an empty area of
    the folder, choose **Open in Terminal**, type `.\start.bat` and press **Enter**.
@@ -129,9 +129,10 @@ The demonstration files are in the `demo` folder inside the DALEEL folder (for e
 2. Under **Upload SRT file**, select `desert_search.srt`.
 3. Choose **Submit mission**.
 
-The status page follows the analysis as it runs. On the test laptop (Intel Core i7-1355U), the
-demonstration flight took about one minute. When the status shows **Complete**, choose
-**View results**.
+The status page follows the analysis as it runs. How long it takes depends on the computer and
+on what else it is doing at the time: on the test laptop (Intel Core i7-1355U, 16 GB RAM), the
+demonstration flight took between one and four minutes. When the status shows **Complete**,
+choose **View results**.
 
 </details>
 
